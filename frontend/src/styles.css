@@ -754,3 +754,37 @@ button {
     transform: translateY(0) scale(1);
   }
 }
+
+
+.osm-field {
+  position: relative;
+}
+
+.osm-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #d7dee7;
+  border-radius: 14px;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.16);
+  overflow: hidden;
+  z-index: 10000;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.osm-suggestion {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  padding: 10px 14px;
+  border-radius: 0;
+  font-weight: 600;
+  color: #111827;
+}
+
+.osm-suggestion:hover {
+  background: #f8fafc;
+}

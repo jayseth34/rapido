@@ -88,6 +88,27 @@ function DetailRow({ label, value }) {
   );
 }
 
+function toRadians(value) {
+  return (Number(value) * Math.PI) / 180;
+}
+
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const earthRadiusKm = 6371;
+  const latDelta = toRadians(lat2 - lat1);
+  const lngDelta = toRadians(lng2 - lng1);
+  const a =
+    Math.sin(latDelta / 2) ** 2 +
+    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(lngDelta / 2) ** 2;
+  return earthRadiusKm * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+}
+
+function estimateRoadKmFromCoords(pickupLat, pickupLng, dropLat, dropLng) {
+  const straight = haversineKm(pickupLat, pickupLng, dropLat, dropLng);
+  const roadMultiplier = 1.3;
+  return Math.max(0.5, Number((straight * roadMultiplier).toFixed(2)));
+}
+
+
 function AlertModal({ message, onClose }) {
   if (!message) {
     return null;
@@ -120,8 +141,12 @@ export default function App() {
   const [partnerRegisterForm, setPartnerRegisterForm] = useState(defaultPartnerRegister);
   const [bookingForm, setBookingForm] = useState({
     pickupAddress: "",
+    pickupLat: null,
+    pickupLng: null,
     dropAddress: "",
-    distanceKm: 4,
+    dropLat: null,
+    dropLng: null,
+    distanceKm: 0,
     weightKg: 2,
     vehicleType: "bike",
     zoneId: "zone-andheri-west",
@@ -143,6 +168,55 @@ export default function App() {
   const [selectedRiders, setSelectedRiders] = useState({});
   const [cancelReasons, setCancelReasons] = useState({});
   const [expandedDeliveries, setExpandedDeliveries] = useState({});
+  const [pickupSuggestions, setPickupSuggestions] = useState([]);
+  const [dropSuggestions, setDropSuggestions] = useState([]);
+  const [showPickupSuggestions, setShowPickupSuggestions] = useState(false);
+  const [showDropSuggestions, setShowDropSuggestions] = useState(false);
+
+  useEffect(() => {
+    const query = bookingForm.pickupAddress?.trim();
+    if (!showPickupSuggestions || !query || query.length < 3) {
+      setPickupSuggestions([]);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&q=${encodeURIComponent(query)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const items = Array.isArray(data)
+            ? data.map((item) => ({ label: item.display_name, lat: Number(item.lat), lng: Number(item.lon) }))
+            : [];
+          setPickupSuggestions(items);
+        })
+        .catch(() => setPickupSuggestions([]));
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [bookingForm.pickupAddress, showPickupSuggestions]);
+
+  useEffect(() => {
+    const query = bookingForm.dropAddress?.trim();
+    if (!showDropSuggestions || !query || query.length < 3) {
+      setDropSuggestions([]);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&q=${encodeURIComponent(query)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const items = Array.isArray(data)
+            ? data.map((item) => ({ label: item.display_name, lat: Number(item.lat), lng: Number(item.lon) }))
+            : [];
+          setDropSuggestions(items);
+        })
+        .catch(() => setDropSuggestions([]));
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [bookingForm.dropAddress, showDropSuggestions]);
+
 
   async function loadSession(role, userId) {
     const payload = await api(`/session?role=${role}&userId=${userId}`);
@@ -210,14 +284,67 @@ export default function App() {
       setBusy(false);
     }
   }
+  async function geocodeNominatim(query) {
+    const q = String(query || "").trim();
+    if (q.length < 3) {
+      return null;
+    }
+
+    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(q)}`);
+    const data = await response.json().catch(() => []);
+    const first = Array.isArray(data) ? data[0] : null;
+    if (!first?.lat || !first?.lon) {
+      return null;
+    }
+
+    return {
+      label: first.display_name,
+      lat: Number(first.lat),
+      lng: Number(first.lon)
+    };
+  }
+
+  async function ensureAutoDistance() {
+    let pickupLat = bookingForm.pickupLat;
+    let pickupLng = bookingForm.pickupLng;
+    let dropLat = bookingForm.dropLat;
+    let dropLng = bookingForm.dropLng;
+
+    if (!pickupLat || !pickupLng) {
+      const place = await geocodeNominatim(bookingForm.pickupAddress);
+      if (place) {
+        pickupLat = place.lat;
+        pickupLng = place.lng;
+      }
+    }
+
+    if (!dropLat || !dropLng) {
+      const place = await geocodeNominatim(bookingForm.dropAddress);
+      if (place) {
+        dropLat = place.lat;
+        dropLng = place.lng;
+      }
+    }
+
+    if (!pickupLat || !pickupLng || !dropLat || !dropLng) {
+      throw new Error("Could not calculate distance. Please choose from suggestions or enter a more specific address.");
+    }
+
+    const distanceKm = estimateRoadKmFromCoords(pickupLat, pickupLng, dropLat, dropLng);
+    const next = { ...bookingForm, pickupLat, pickupLng, dropLat, dropLng, distanceKm };
+    setBookingForm(next);
+    return next;
+  }
+
 
   async function estimateFare() {
     setBusy(true);
     setError("");
     try {
+      const nextForm = await ensureAutoDistance();
       const payload = await api("/bookings/estimate", {
         method: "POST",
-        body: JSON.stringify(bookingForm)
+        body: JSON.stringify(nextForm)
       });
       setEstimate(payload);
     } catch (requestError) {
@@ -231,9 +358,10 @@ export default function App() {
     setBusy(true);
     setError("");
     try {
+      const nextForm = await ensureAutoDistance();
       await api("/deliveries", {
         method: "POST",
-        body: JSON.stringify({ ...bookingForm, customerId: session.userId })
+        body: JSON.stringify({ ...nextForm, customerId: session.userId })
       });
       setEstimate(null);
       await loadSession(session.role, session.userId);
@@ -578,15 +706,83 @@ export default function App() {
             <div className="form-grid compact-grid">
               <label className="full">
                 Pickup address
-                <input value={bookingForm.pickupAddress} onChange={(event) => setBookingForm({ ...bookingForm, pickupAddress: event.target.value })} />
+                <div className="osm-field">
+                  <input
+                    value={bookingForm.pickupAddress}
+                    onFocus={() => setShowPickupSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowPickupSuggestions(false), 150)}
+                    onChange={(event) => {
+                      setBookingForm({ ...bookingForm, pickupAddress: event.target.value, pickupLat: null, pickupLng: null, distanceKm: 0 });
+                      setShowPickupSuggestions(true);
+                    }}
+                    placeholder="Type pickup address"
+                  />
+                  {showPickupSuggestions && pickupSuggestions.length ? (
+                    <div className="osm-suggestions">
+                      {pickupSuggestions.map((item) => (
+                        <button
+                          type="button"
+                          className="osm-suggestion"
+                          key={item.label}
+                          onMouseDown={() => {
+                            setBookingForm((current) => {
+                            const next = { ...current, pickupAddress: item.label, pickupLat: item.lat, pickupLng: item.lng };
+                            if (next.dropLat && next.dropLng) {
+                              return { ...next, distanceKm: estimateRoadKmFromCoords(next.pickupLat, next.pickupLng, next.dropLat, next.dropLng) };
+                            }
+                            return next;
+                          });
+                            setShowPickupSuggestions(false);
+                          }}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
               </label>
               <label className="full">
                 Drop address
-                <input value={bookingForm.dropAddress} onChange={(event) => setBookingForm({ ...bookingForm, dropAddress: event.target.value })} />
+                <div className="osm-field">
+                  <input
+                    value={bookingForm.dropAddress}
+                    onFocus={() => setShowDropSuggestions(true)}
+                    onBlur={() => setTimeout(() => setShowDropSuggestions(false), 150)}
+                    onChange={(event) => {
+                      setBookingForm({ ...bookingForm, dropAddress: event.target.value, dropLat: null, dropLng: null, distanceKm: 0 });
+                      setShowDropSuggestions(true);
+                    }}
+                    placeholder="Type drop address"
+                  />
+                  {showDropSuggestions && dropSuggestions.length ? (
+                    <div className="osm-suggestions">
+                      {dropSuggestions.map((item) => (
+                        <button
+                          type="button"
+                          className="osm-suggestion"
+                          key={item.label}
+                          onMouseDown={() => {
+                            setBookingForm((current) => {
+                            const next = { ...current, dropAddress: item.label, dropLat: item.lat, dropLng: item.lng };
+                            if (next.pickupLat && next.pickupLng) {
+                              return { ...next, distanceKm: estimateRoadKmFromCoords(next.pickupLat, next.pickupLng, next.dropLat, next.dropLng) };
+                            }
+                            return next;
+                          });
+                            setShowDropSuggestions(false);
+                          }}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
               </label>
               <label>
                 Distance (km)
-                <input type="number" value={bookingForm.distanceKm} onChange={(event) => setBookingForm({ ...bookingForm, distanceKm: Number(event.target.value) })} />
+                <input type="number" value={bookingForm.distanceKm} readOnly />
               </label>
               <label>
                 Weight (kg)
