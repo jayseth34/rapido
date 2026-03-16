@@ -93,7 +93,9 @@ function mapDelivery(row, history = []) {
     riderName: row.rider_name,
     riderPhone: row.rider_phone,
     pickupAddress: row.pickup_address,
+    pickupDetails: row.pickup_details,
     dropAddress: row.drop_address,
+    dropDetails: row.drop_details,
     distanceKm: Number(row.distance_km),
     weightKg: Number(row.weight_kg),
     vehicleType: row.vehicle_type,
@@ -440,16 +442,18 @@ export async function createDelivery(input) {
 
     await client.query(
       `INSERT INTO deliveries (
-        id, customer_id, partner_id, rider_id, pickup_address, drop_address, distance_km, weight_kg,
+        id, customer_id, partner_id, rider_id, pickup_address, pickup_details, drop_address, drop_details, distance_km, weight_kg,
         vehicle_type, zone_id, price, payment_method, payment_status, status
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
       [
         deliveryId,
         input.customerId,
         null,
         null,
         input.pickupAddress,
+        input.pickupDetails || null,
         input.dropAddress,
+        input.dropDetails || null,
         Number(input.distanceKm),
         Number(input.weightKg),
         input.vehicleType,

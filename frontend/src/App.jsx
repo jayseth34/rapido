@@ -141,9 +141,11 @@ export default function App() {
   const [partnerRegisterForm, setPartnerRegisterForm] = useState(defaultPartnerRegister);
   const [bookingForm, setBookingForm] = useState({
     pickupAddress: "",
+    pickupDetails: "",
     pickupLat: null,
     pickupLng: null,
     dropAddress: "",
+    dropDetails: "",
     dropLat: null,
     dropLng: null,
     distanceKm: 0,
@@ -743,6 +745,14 @@ export default function App() {
                 </div>
               </label>
               <label className="full">
+                Pickup details (flat / wing / floor / landmark)
+                <input
+                  value={bookingForm.pickupDetails}
+                  onChange={(event) => setBookingForm({ ...bookingForm, pickupDetails: event.target.value })}
+                  placeholder="Example: Ratan Heights, A wing, 902 (near Navjeevan Society)"
+                />
+              </label>
+              <label className="full">
                 Drop address
                 <div className="osm-field">
                   <input
@@ -779,6 +789,14 @@ export default function App() {
                     </div>
                   ) : null}
                 </div>
+              </label>
+              <label className="full">
+                Drop details (flat / wing / floor / landmark)
+                <input
+                  value={bookingForm.dropDetails}
+                  onChange={(event) => setBookingForm({ ...bookingForm, dropDetails: event.target.value })}
+                  placeholder="Example: Building name, wing, flat number, landmark"
+                />
               </label>
               <label>
                 Distance (km)
@@ -823,6 +841,8 @@ export default function App() {
                   <div className="delivery-summary">
                     <strong>{delivery.id} - Rs {delivery.price}</strong>
                     <span>{delivery.status} - {delivery.pickupAddress} to {delivery.dropAddress}</span>
+                    {delivery.pickupDetails ? <span>Pickup details: {delivery.pickupDetails}</span> : null}
+                    {delivery.dropDetails ? <span>Drop details: {delivery.dropDetails}</span> : null}
                     <span>{delivery.partnerName || "Waiting for partner"}</span>
                     <span>{delivery.riderName ? `Assigned rider: ${delivery.riderName} (${delivery.riderPhone})` : "Rider not assigned yet"}</span>
                     {delivery.status !== "Delivered" && delivery.status !== "Cancelled" ? (
@@ -960,6 +980,8 @@ export default function App() {
                       <div>
                         <strong>{delivery.id}</strong>
                         <span>{delivery.status} - {delivery.pickupAddress} to {delivery.dropAddress}</span>
+                        {delivery.pickupDetails ? <span>Pickup details: {delivery.pickupDetails}</span> : null}
+                        {delivery.dropDetails ? <span>Drop details: {delivery.dropDetails}</span> : null}
                         <span>Assigned rider: {delivery.riderName || "-"} - {delivery.riderPhone || "-"}</span>
                         <span>{delivery.customerName} - {delivery.customerPhone}</span>
                       </div>
@@ -983,6 +1005,8 @@ export default function App() {
                     <div>
                       <strong>{delivery.id}</strong>
                       <span>{delivery.pickupAddress} to {delivery.dropAddress}</span>
+                      {delivery.pickupDetails ? <span>Pickup details: {delivery.pickupDetails}</span> : null}
+                      {delivery.dropDetails ? <span>Drop details: {delivery.dropDetails}</span> : null}
                       <span>Rs {delivery.price} - {delivery.distanceKm} km</span>
                     </div>
                     <select value={selectedRiders[delivery.id] || view.profile.riders[0]?.id || ""} onChange={(event) => setSelectedRider(delivery.id, event.target.value)}>
@@ -1079,6 +1103,8 @@ export default function App() {
                   <strong>{delivery.id} - Rs {delivery.price}</strong>
                   <span>{delivery.customerName} - {delivery.customerPhone}</span>
                   <span>{delivery.status} - {delivery.pickupAddress} to {delivery.dropAddress}</span>
+                  {delivery.pickupDetails ? <span>Pickup details: {delivery.pickupDetails}</span> : null}
+                  {delivery.dropDetails ? <span>Drop details: {delivery.dropDetails}</span> : null}
                   <span>{delivery.riderName ? `Rider: ${delivery.riderName} (${delivery.riderPhone})` : "Rider not assigned yet"}</span>
                   {delivery.partnerId ? (
                     <span>Partner: {delivery.partnerName}</span>
