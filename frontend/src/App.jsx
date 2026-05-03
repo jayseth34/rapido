@@ -4,38 +4,17 @@ const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 const SESSION_KEY = "rapido_session";
 const statusFlow = ["Picked Up", "In Transit", "Delivered"];
 
-const defaultCustomerRegister = {
-  fullName: "",
-  phone: "",
-  email: "",
-  password: ""
-};
+const defaultCustomerRegister = { fullName: "", phone: "", email: "", password: "" };
 
 const defaultPartnerRegister = {
-  fullName: "",
-  phone: "",
-  email: "",
-  password: "",
-  aadhaar: "",
-  pan: "",
-  licenseNumber: "",
-  address: "",
-  bankAccount: "",
-  distanceAwayKm: 1,
-  vehicleType: "bike",
-  vehicleNumber: "",
-  rcNumber: "",
-  insuranceNumber: "",
-  riderFullName: "",
-  riderPhone: "",
-  riderLicenseNumber: "",
-  riderEmergencyContact: ""
+  fullName: "", phone: "", email: "", password: "",
+  aadhaar: "", pan: "", licenseNumber: "", address: "", bankAccount: "",
+  distanceAwayKm: 1, vehicleType: "bike", vehicleNumber: "", rcNumber: "",
+  insuranceNumber: "", riderFullName: "", riderPhone: "",
+  riderLicenseNumber: "", riderEmergencyContact: ""
 };
 
-const defaultLogin = {
-  phone: "",
-  password: ""
-};
+const defaultLogin = { phone: "", password: "" };
 
 function api(path, options = {}) {
   return fetch(`${API_BASE}${path}`, {
@@ -43,90 +22,170 @@ function api(path, options = {}) {
     ...options
   }).then(async (response) => {
     const payload = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(payload.message || "Request failed");
-    }
+    if (!response.ok) throw new Error(payload.message || "Request failed");
     return payload;
   });
+}
+
+function Icon({ name, size = 18 }) {
+  const icons = {
+    user: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>,
+    truck: <><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></>,
+    shield: <><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></>,
+    package: <><line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></>,
+    mapPin: <><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></>,
+    phone: <><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.38 2 2 0 0 1 3.6 1.26h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.1 6.1l.51-2a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21 16.92z"/></>,
+    clock: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
+    checkCircle: <><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></>,
+    xCircle: <><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></>,
+    alertCircle: <><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></>,
+    trending: <><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></>,
+    activity: <><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></>,
+    users: <><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></>,
+    dollar: <><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></>,
+    logout: <><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></>,
+    chevronDown: <polyline points="6 9 12 15 18 9"/>,
+    chevronUp: <polyline points="18 15 12 9 6 15"/>,
+    plus: <><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>,
+    minus: <line x1="5" y1="12" x2="19" y2="12"/>,
+    eye: <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>,
+    car: <><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></>,
+    star: <><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></>,
+    check: <polyline points="20 6 9 17 4 12"/>,
+  };
+
+  return (
+    <svg
+      className="icon"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      {icons[name] || icons.package}
+    </svg>
+  );
+}
+
+function ToastContainer({ toasts, removeToast }) {
+  return (
+    <div className="toast-container">
+      {toasts.map((toast) => (
+        <div key={toast.id} className={`toast toast-${toast.type}`} role="alert">
+          <span className="toast-icon">
+            <Icon name={toast.type === "error" ? "alertCircle" : "checkCircle"} size={16} />
+          </span>
+          <span className="toast-message">{toast.message}</span>
+          <button className="toast-close" onClick={() => removeToast(toast.id)} aria-label="Close">
+            <Icon name="xCircle" size={14} />
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function StatusBadge({ status }) {
+  const map = {
+    "Created": "badge-created",
+    "Picked Up": "badge-picked",
+    "In Transit": "badge-transit",
+    "Delivered": "badge-delivered",
+    "Cancelled": "badge-cancelled",
+    "Pending": "badge-pending",
+    "Approved": "badge-approved",
+    "Rejected": "badge-rejected",
+    "Online": "badge-online",
+    "Offline": "badge-offline",
+  };
+  return <span className={`status-badge ${map[status] || "badge-default"}`}>{status}</span>;
+}
+
+function DeliveryProgress({ status }) {
+  const steps = ["Created", "Picked Up", "In Transit", "Delivered"];
+  const current = steps.indexOf(status);
+  const cancelled = status === "Cancelled";
+
+  return (
+    <div className={`delivery-progress${cancelled ? " progress-cancelled" : ""}`}>
+      {cancelled ? (
+        <div className="cancelled-track">
+          <Icon name="xCircle" size={14} />
+          <span>Cancelled</span>
+        </div>
+      ) : (
+        steps.map((step, i) => (
+          <div key={step} className={`prog-step${i <= current ? " step-done" : ""}${i === current ? " step-active" : ""}`}>
+            <div className="prog-dot">
+              {i < current && <Icon name="check" size={9} />}
+            </div>
+            {i < steps.length - 1 && <div className="prog-line" />}
+            <span className="prog-label">{step}</span>
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
+
+function MetricCard({ label, value, accent, icon }) {
+  return (
+    <div className="metric-card" style={{ "--accent": accent }}>
+      <div className="metric-icon-wrap">
+        <Icon name={icon || "activity"} size={20} />
+      </div>
+      <div className="metric-body">
+        <span className="metric-label">{label}</span>
+        <strong className="metric-value">{value}</strong>
+      </div>
+    </div>
+  );
 }
 
 function SectionTitle({ eyebrow, title, subtitle }) {
   return (
     <div className="section-title">
-      <p>{eyebrow}</p>
-      <h2>{title}</h2>
-      <span>{subtitle}</span>
+      <p className="section-eyebrow">{eyebrow}</p>
+      <h2 className="section-heading">{title}</h2>
+      {subtitle && <span className="section-sub">{subtitle}</span>}
     </div>
   );
 }
-
-function MetricCard({ label, value, accent }) {
-  return (
-    <div className="metric-card">
-      <span>{label}</span>
-      <strong style={{ color: accent }}>{value}</strong>
-    </div>
-  );
-}
-
-function formatDate(value) {
-  return new Date(value).toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
-}
-
 
 function DetailRow({ label, value }) {
   return (
     <div className="detail-row">
       <strong>{label}</strong>
-      <span>{value || "-"}</span>
+      <span>{value || "—"}</span>
     </div>
   );
 }
 
-function toRadians(value) {
-  return (Number(value) * Math.PI) / 180;
-}
+function toRadians(v) { return (Number(v) * Math.PI) / 180; }
 
 function haversineKm(lat1, lng1, lat2, lng2) {
-  const earthRadiusKm = 6371;
-  const latDelta = toRadians(lat2 - lat1);
-  const lngDelta = toRadians(lng2 - lng1);
-  const a =
-    Math.sin(latDelta / 2) ** 2 +
-    Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(lngDelta / 2) ** 2;
-  return earthRadiusKm * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+  const R = 6371;
+  const dLat = toRadians(lat2 - lat1);
+  const dLng = toRadians(lng2 - lng1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRadians(lat1)) * Math.cos(toRadians(lat2)) * Math.sin(dLng / 2) ** 2;
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
 
-function estimateRoadKmFromCoords(pickupLat, pickupLng, dropLat, dropLng) {
-  const straight = haversineKm(pickupLat, pickupLng, dropLat, dropLng);
-  const roadMultiplier = 1.3;
-  return Math.max(0.5, Number((straight * roadMultiplier).toFixed(2)));
+function estimateRoadKmFromCoords(lat1, lng1, lat2, lng2) {
+  return Math.max(0.5, Number((haversineKm(lat1, lng1, lat2, lng2) * 1.3).toFixed(2)));
 }
 
+function formatDate(value) {
+  return new Date(value).toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+}
 
-function AlertModal({ message, onClose }) {
-  if (!message) {
-    return null;
-  }
-
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-card" onClick={(event) => event.stopPropagation()} role="alertdialog" aria-modal="true">
-        <div className="modal-icon">!</div>
-        <div className="modal-copy">
-          <span className="modal-label">Request issue</span>
-          <h3>Something needs attention</h3>
-          <p>{message}</p>
-        </div>
-        <button className="primary modal-button" onClick={onClose}>Okay</button>
-      </div>
-    </div>
-  );
+function Spinner() {
+  return <span className="spinner" aria-hidden="true" />;
 }
 
 export default function App() {
@@ -134,39 +193,20 @@ export default function App() {
   const [authMode, setAuthMode] = useState("login");
   const [session, setSession] = useState(null);
   const [view, setView] = useState(null);
-  const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [toasts, setToasts] = useState([]);
   const [loginForm, setLoginForm] = useState(defaultLogin);
   const [customerRegisterForm, setCustomerRegisterForm] = useState(defaultCustomerRegister);
   const [partnerRegisterForm, setPartnerRegisterForm] = useState(defaultPartnerRegister);
   const [bookingForm, setBookingForm] = useState({
-    pickupAddress: "",
-    pickupDetails: "",
-    pickupLat: null,
-    pickupLng: null,
-    dropAddress: "",
-    dropDetails: "",
-    dropLat: null,
-    dropLng: null,
-    distanceKm: 0,
-    weightKg: 2,
-    vehicleType: "bike",
-    zoneId: "zone-andheri-west",
-    paymentMethod: "Online"
+    pickupAddress: "", pickupDetails: "", pickupLat: null, pickupLng: null,
+    dropAddress: "", dropDetails: "", dropLat: null, dropLng: null,
+    distanceKm: 0, weightKg: 2, vehicleType: "bike",
+    zoneId: "zone-andheri-west", paymentMethod: "Online"
   });
   const [estimate, setEstimate] = useState(null);
-  const [vehicleForm, setVehicleForm] = useState({
-    vehicleType: "bike",
-    vehicleNumber: "",
-    rcNumber: "",
-    insuranceNumber: ""
-  });
-  const [riderForm, setRiderForm] = useState({
-    fullName: "",
-    phone: "",
-    licenseNumber: "",
-    emergencyContact: ""
-  });
+  const [vehicleForm, setVehicleForm] = useState({ vehicleType: "bike", vehicleNumber: "", rcNumber: "", insuranceNumber: "" });
+  const [riderForm, setRiderForm] = useState({ fullName: "", phone: "", licenseNumber: "", emergencyContact: "" });
   const [selectedRiders, setSelectedRiders] = useState({});
   const [cancelReasons, setCancelReasons] = useState({});
   const [expandedDeliveries, setExpandedDeliveries] = useState({});
@@ -175,50 +215,39 @@ export default function App() {
   const [showPickupSuggestions, setShowPickupSuggestions] = useState(false);
   const [showDropSuggestions, setShowDropSuggestions] = useState(false);
 
+  function addToast(message, type = "error") {
+    const id = Date.now() + Math.random();
+    setToasts((prev) => [...prev, { id, message, type }]);
+    setTimeout(() => removeToast(id), 5000);
+  }
+
+  function removeToast(id) {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }
+
   useEffect(() => {
     const query = bookingForm.pickupAddress?.trim();
-    if (!showPickupSuggestions || !query || query.length < 3) {
-      setPickupSuggestions([]);
-      return;
-    }
-
+    if (!showPickupSuggestions || !query || query.length < 3) { setPickupSuggestions([]); return; }
     const timer = setTimeout(() => {
       fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&q=${encodeURIComponent(query)}`)
-        .then((res) => res.json())
-        .then((data) => {
-          const items = Array.isArray(data)
-            ? data.map((item) => ({ label: item.display_name, lat: Number(item.lat), lng: Number(item.lon) }))
-            : [];
-          setPickupSuggestions(items);
-        })
+        .then(r => r.json())
+        .then(data => setPickupSuggestions(Array.isArray(data) ? data.map(i => ({ label: i.display_name, lat: Number(i.lat), lng: Number(i.lon) })) : []))
         .catch(() => setPickupSuggestions([]));
     }, 350);
-
     return () => clearTimeout(timer);
   }, [bookingForm.pickupAddress, showPickupSuggestions]);
 
   useEffect(() => {
     const query = bookingForm.dropAddress?.trim();
-    if (!showDropSuggestions || !query || query.length < 3) {
-      setDropSuggestions([]);
-      return;
-    }
-
+    if (!showDropSuggestions || !query || query.length < 3) { setDropSuggestions([]); return; }
     const timer = setTimeout(() => {
       fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&q=${encodeURIComponent(query)}`)
-        .then((res) => res.json())
-        .then((data) => {
-          const items = Array.isArray(data)
-            ? data.map((item) => ({ label: item.display_name, lat: Number(item.lat), lng: Number(item.lon) }))
-            : [];
-          setDropSuggestions(items);
-        })
+        .then(r => r.json())
+        .then(data => setDropSuggestions(Array.isArray(data) ? data.map(i => ({ label: i.display_name, lat: Number(i.lat), lng: Number(i.lon) })) : []))
         .catch(() => setDropSuggestions([]));
     }, 350);
-
     return () => clearTimeout(timer);
   }, [bookingForm.dropAddress, showDropSuggestions]);
-
 
   async function loadSession(role, userId) {
     const payload = await api(`/session?role=${role}&userId=${userId}`);
@@ -229,235 +258,165 @@ export default function App() {
 
   useEffect(() => {
     const saved = localStorage.getItem(SESSION_KEY);
-    if (!saved) {
-      return;
-    }
-
+    if (!saved) return;
     const parsed = JSON.parse(saved);
-    loadSession(parsed.role, parsed.userId).catch(() => {
-      localStorage.removeItem(SESSION_KEY);
-    });
+    loadSession(parsed.role, parsed.userId).catch(() => localStorage.removeItem(SESSION_KEY));
   }, []);
 
   async function handleLogin() {
     setBusy(true);
-    setError("");
     try {
-      const user = await api("/auth/login", {
-        method: "POST",
-        body: JSON.stringify({ ...loginForm, role: selectedRole })
-      });
+      const user = await api("/auth/login", { method: "POST", body: JSON.stringify({ ...loginForm, role: selectedRole }) });
       await loadSession(user.role, user.id);
-    } catch (requestError) {
-      setError(requestError.message);
-    } finally {
-      setBusy(false);
-    }
+      addToast(`Welcome back!`, "success");
+    } catch (e) { addToast(e.message); }
+    finally { setBusy(false); }
   }
 
   async function handleCustomerRegister() {
     setBusy(true);
-    setError("");
     try {
-      const user = await api("/auth/register-customer", {
-        method: "POST",
-        body: JSON.stringify(customerRegisterForm)
-      });
+      const user = await api("/auth/register-customer", { method: "POST", body: JSON.stringify(customerRegisterForm) });
       await loadSession(user.role, user.id);
-    } catch (requestError) {
-      setError(requestError.message);
-    } finally {
-      setBusy(false);
-    }
+      addToast("Account created successfully!", "success");
+    } catch (e) { addToast(e.message); }
+    finally { setBusy(false); }
   }
 
   async function handlePartnerRegister() {
     setBusy(true);
-    setError("");
     try {
-      const user = await api("/auth/register-partner", {
-        method: "POST",
-        body: JSON.stringify(partnerRegisterForm)
-      });
+      const user = await api("/auth/register-partner", { method: "POST", body: JSON.stringify(partnerRegisterForm) });
       await loadSession(user.role, user.id);
-    } catch (requestError) {
-      setError(requestError.message);
-    } finally {
-      setBusy(false);
-    }
+      addToast("Partner registered successfully!", "success");
+    } catch (e) { addToast(e.message); }
+    finally { setBusy(false); }
   }
+
   async function geocodeNominatim(query) {
     const q = String(query || "").trim();
-    if (q.length < 3) {
-      return null;
-    }
-
+    if (q.length < 3) return null;
     const response = await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(q)}`);
     const data = await response.json().catch(() => []);
     const first = Array.isArray(data) ? data[0] : null;
-    if (!first?.lat || !first?.lon) {
-      return null;
-    }
-
-    return {
-      label: first.display_name,
-      lat: Number(first.lat),
-      lng: Number(first.lon)
-    };
+    if (!first?.lat || !first?.lon) return null;
+    return { label: first.display_name, lat: Number(first.lat), lng: Number(first.lon) };
   }
 
   async function ensureAutoDistance() {
-    let pickupLat = bookingForm.pickupLat;
-    let pickupLng = bookingForm.pickupLng;
-    let dropLat = bookingForm.dropLat;
-    let dropLng = bookingForm.dropLng;
-
+    let { pickupLat, pickupLng, dropLat, dropLng } = bookingForm;
     if (!pickupLat || !pickupLng) {
-      const place = await geocodeNominatim(bookingForm.pickupAddress);
-      if (place) {
-        pickupLat = place.lat;
-        pickupLng = place.lng;
-      }
+      const p = await geocodeNominatim(bookingForm.pickupAddress);
+      if (p) { pickupLat = p.lat; pickupLng = p.lng; }
     }
-
     if (!dropLat || !dropLng) {
-      const place = await geocodeNominatim(bookingForm.dropAddress);
-      if (place) {
-        dropLat = place.lat;
-        dropLng = place.lng;
-      }
+      const p = await geocodeNominatim(bookingForm.dropAddress);
+      if (p) { dropLat = p.lat; dropLng = p.lng; }
     }
-
     if (!pickupLat || !pickupLng || !dropLat || !dropLng) {
       throw new Error("Could not calculate distance. Please choose from suggestions or enter a more specific address.");
     }
-
     const distanceKm = estimateRoadKmFromCoords(pickupLat, pickupLng, dropLat, dropLng);
     const next = { ...bookingForm, pickupLat, pickupLng, dropLat, dropLng, distanceKm };
     setBookingForm(next);
     return next;
   }
 
-
   async function estimateFare() {
     setBusy(true);
-    setError("");
     try {
       const nextForm = await ensureAutoDistance();
-      const payload = await api("/bookings/estimate", {
-        method: "POST",
-        body: JSON.stringify(nextForm)
-      });
+      const payload = await api("/bookings/estimate", { method: "POST", body: JSON.stringify(nextForm) });
       setEstimate(payload);
-    } catch (requestError) {
-      setError(requestError.message);
-    } finally {
-      setBusy(false);
-    }
+    } catch (e) { addToast(e.message); }
+    finally { setBusy(false); }
   }
 
   async function createBooking() {
     setBusy(true);
-    setError("");
     try {
       const nextForm = await ensureAutoDistance();
-      await api("/deliveries", {
-        method: "POST",
-        body: JSON.stringify({ ...nextForm, customerId: session.userId })
-      });
+      await api("/deliveries", { method: "POST", body: JSON.stringify({ ...nextForm, customerId: session.userId }) });
       setEstimate(null);
       await loadSession(session.role, session.userId);
-    } catch (requestError) {
-      setError(requestError.message);
-    } finally {
-      setBusy(false);
-    }
+      addToast("Booking created!", "success");
+    } catch (e) { addToast(e.message); }
+    finally { setBusy(false); }
   }
 
   async function toggleAvailability() {
-    await api(`/partners/${session.userId}/toggle-availability`, { method: "PATCH" });
-    await loadSession(session.role, session.userId);
+    try {
+      await api(`/partners/${session.userId}/toggle-availability`, { method: "PATCH" });
+      await loadSession(session.role, session.userId);
+    } catch (e) { addToast(e.message); }
   }
 
   async function addVehicle() {
     setBusy(true);
-    setError("");
     try {
-      await api(`/partners/${session.userId}/vehicles`, {
-        method: "POST",
-        body: JSON.stringify(vehicleForm)
-      });
+      await api(`/partners/${session.userId}/vehicles`, { method: "POST", body: JSON.stringify(vehicleForm) });
       setVehicleForm({ vehicleType: "bike", vehicleNumber: "", rcNumber: "", insuranceNumber: "" });
       await loadSession(session.role, session.userId);
-    } catch (requestError) {
-      setError(requestError.message);
-    } finally {
-      setBusy(false);
-    }
+      addToast("Vehicle added!", "success");
+    } catch (e) { addToast(e.message); }
+    finally { setBusy(false); }
   }
 
   async function addRider() {
     setBusy(true);
-    setError("");
     try {
-      await api(`/partners/${session.userId}/riders`, {
-        method: "POST",
-        body: JSON.stringify(riderForm)
-      });
+      await api(`/partners/${session.userId}/riders`, { method: "POST", body: JSON.stringify(riderForm) });
       setRiderForm({ fullName: "", phone: "", licenseNumber: "", emergencyContact: "" });
       await loadSession(session.role, session.userId);
-    } catch (requestError) {
-      setError(requestError.message);
-    } finally {
-      setBusy(false);
-    }
+      addToast("Rider added!", "success");
+    } catch (e) { addToast(e.message); }
+    finally { setBusy(false); }
   }
 
   async function updateDeliveryStatus(deliveryId, status) {
-    await api(`/deliveries/${deliveryId}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({ status })
-    });
-    await loadSession(session.role, session.userId);
+    try {
+      await api(`/deliveries/${deliveryId}/status`, { method: "PATCH", body: JSON.stringify({ status }) });
+      await loadSession(session.role, session.userId);
+      addToast(`Status updated to ${status}`, "success");
+    } catch (e) { addToast(e.message); }
   }
 
   async function acceptDelivery(deliveryId) {
-    await api(`/deliveries/${deliveryId}/accept`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        partnerId: session.userId,
-        riderId: selectedRiders[deliveryId] || view.profile.riders[0]?.id || null
-      })
-    });
-    await loadSession(session.role, session.userId);
+    try {
+      await api(`/deliveries/${deliveryId}/accept`, {
+        method: "PATCH",
+        body: JSON.stringify({ partnerId: session.userId, riderId: selectedRiders[deliveryId] || view.profile.riders[0]?.id || null })
+      });
+      await loadSession(session.role, session.userId);
+      addToast("Job accepted!", "success");
+    } catch (e) { addToast(e.message); }
   }
 
   async function assignDelivery(deliveryId, partnerId) {
-    await api(`/deliveries/${deliveryId}/assign`, {
-      method: "PATCH",
-      body: JSON.stringify({ partnerId })
-    });
-    await loadSession(session.role, session.userId);
+    try {
+      await api(`/deliveries/${deliveryId}/assign`, { method: "PATCH", body: JSON.stringify({ partnerId }) });
+      await loadSession(session.role, session.userId);
+      addToast("Partner assigned!", "success");
+    } catch (e) { addToast(e.message); }
   }
 
   async function cancelDelivery(deliveryId) {
-    await api(`/deliveries/${deliveryId}/cancel`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        actorRole: session.role,
-        actorId: session.userId,
-        reason: cancelReasons[deliveryId] || "No reason provided"
-      })
-    });
-    await loadSession(session.role, session.userId);
+    try {
+      await api(`/deliveries/${deliveryId}/cancel`, {
+        method: "PATCH",
+        body: JSON.stringify({ actorRole: session.role, actorId: session.userId, reason: cancelReasons[deliveryId] || "No reason provided" })
+      });
+      await loadSession(session.role, session.userId);
+      addToast("Delivery cancelled", "success");
+    } catch (e) { addToast(e.message); }
   }
 
   async function updatePartnerVerification(partnerId, verificationStatus) {
-    await api(`/partners/${partnerId}/verification`, {
-      method: "PATCH",
-      body: JSON.stringify({ verificationStatus })
-    });
-    await loadSession(session.role, session.userId);
+    try {
+      await api(`/partners/${partnerId}/verification`, { method: "PATCH", body: JSON.stringify({ verificationStatus }) });
+      await loadSession(session.role, session.userId);
+      addToast(`Partner ${verificationStatus.toLowerCase()}`, "success");
+    } catch (e) { addToast(e.message); }
   }
 
   function logout() {
@@ -465,556 +424,762 @@ export default function App() {
     setSession(null);
     setView(null);
     setLoginForm(defaultLogin);
-    setError("");
   }
 
-  function setCancelReason(deliveryId, value) {
-    setCancelReasons((current) => ({ ...current, [deliveryId]: value }));
-  }
+  function setCancelReason(id, val) { setCancelReasons(p => ({ ...p, [id]: val })); }
+  function setSelectedRider(id, rid) { setSelectedRiders(p => ({ ...p, [id]: rid })); }
+  function toggleDeliveryExpansion(id) { setExpandedDeliveries(p => ({ ...p, [id]: !p[id] })); }
 
-  function setSelectedRider(deliveryId, riderId) {
-    setSelectedRiders((current) => ({ ...current, [deliveryId]: riderId }));
-  }
-
-  function toggleDeliveryExpansion(deliveryId) {
-    setExpandedDeliveries((current) => ({ ...current, [deliveryId]: !current[deliveryId] }));
-  }
-
+  // ─── AUTH VIEW ────────────────────────────────────────────────────────────────
   if (!view) {
+    const roles = [
+      { id: "customer", icon: "user", label: "Customer", desc: "Book & track deliveries" },
+      { id: "partner", icon: "truck", label: "Partner", desc: "Manage riders & earn" },
+      { id: "admin", icon: "shield", label: "Admin", desc: "Operations control" },
+    ];
+
     return (
-      <div className="app-shell app-shell-auth auth-shell-premium">
-        <header className="hero hero-auth hero-auth-premium">
-          <div>
-            <span className="hero-badge">Three User Journeys</span>
-            <h1>Customer booking, partner onboarding, rider assignment, and admin control from one product foundation.</h1>
-            <p>
-              Customers sign up and book. Partners register themselves, add vehicles, and attach riders. Admin reviews full
-              partner and rider details, approves them, and supervises all delivery changes.
-            </p>
+      <div className="auth-shell">
+        <ToastContainer toasts={toasts} removeToast={removeToast} />
+
+        <div className="auth-brand">
+          <div className="brand-logo-row">
+            <div className="brand-orb">R</div>
+            <span className="brand-name">Rapido</span>
           </div>
-          <div className="hero-metrics hero-metrics-compact">
-            <MetricCard label="Roles" value="3" accent="#ff6b35" />
-            <MetricCard label="Storage" value="Postgres" accent="#017a5b" />
-            <MetricCard label="Assigned rider" value="Visible" accent="#0f172a" />
+          <h1 className="brand-headline">Delivery,<br />reinvented.</h1>
+          <p className="brand-tagline">
+            A multi-role platform — customers book, partners deliver,
+            admins orchestrate.
+          </p>
+
+          <div className="role-cards-vertical">
+            {roles.map((r) => (
+              <button
+                key={r.id}
+                className={`role-pick-card${selectedRole === r.id ? " role-pick-active" : ""}`}
+                onClick={() => { setSelectedRole(r.id); if (r.id === "admin") setAuthMode("login"); }}
+              >
+                <span className="role-pick-icon"><Icon name={r.icon} size={20} /></span>
+                <span className="role-pick-text">
+                  <strong>{r.label}</strong>
+                  <span>{r.desc}</span>
+                </span>
+                {selectedRole === r.id && <span className="role-pick-check"><Icon name="checkCircle" size={16} /></span>}
+              </button>
+            ))}
           </div>
-        </header>
 
-        <AlertModal message={error} onClose={() => setError("")} />
+          <div className="brand-chips">
+            <span className="brand-chip"><Icon name="checkCircle" size={12} /> OTP-style flow</span>
+            <span className="brand-chip"><Icon name="phone" size={12} /> Rider contact visible</span>
+            <span className="brand-chip"><Icon name="star" size={12} /> Self-onboarding</span>
+          </div>
+        </div>
 
-        <main className="auth-layout">
-          <section className="panel auth-panel auth-panel-sticky">
-            <SectionTitle
-              eyebrow="Choose Portal"
-              title="Pick the journey"
-              subtitle="Everything starts here. Switch roles without leaving the screen."
-            />
-
-            <div className="role-grid role-grid-compact">
-              {["customer", "partner", "admin"].map((role) => (
-                <button
-                  key={role}
-                  className={selectedRole === role ? "role-card active" : "role-card"}
-                  onClick={() => {
-                    setSelectedRole(role);
-                    setAuthMode(role === "admin" ? "login" : authMode);
-                  }}
-                >
-                  <strong>{role}</strong>
-                  <span>
-                    {role === "customer"
-                      ? "Register, book, track, and contact the assigned rider."
-                      : role === "partner"
-                        ? "Create partner, vehicle, and rider records in one go."
-                        : "Approve partners, inspect riders, and control live dispatch."}
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            <div className="auth-highlights">
-              <div className="highlight-chip">OTP-style journey ready</div>
-              <div className="highlight-chip">Rider contact visible</div>
-              <div className="highlight-chip">Partner self-onboarding</div>
-            </div>
-          </section>
-
-          <section className="panel auth-panel auth-panel-wide">
-            <SectionTitle
-              eyebrow="Access"
-              title={selectedRole === "admin" ? "Admin login" : authMode === "login" ? "Login" : `Register ${selectedRole}`}
-              subtitle="Compact, role-aware access flow without extra scrolling."
-            />
-
-            {selectedRole !== "admin" ? (
-              <div className="pill-row form-switch-row form-switch-row-wide">
-                <button className={authMode === "login" ? "ghost active-switch" : "ghost"} onClick={() => setAuthMode("login")}>Login</button>
-                <button className={authMode === "register" ? "ghost active-switch" : "ghost"} onClick={() => setAuthMode("register")}>Register</button>
+        <div className="auth-form-side">
+          <div className="auth-form-card">
+            <div className="auth-form-header">
+              <div className={`auth-role-badge auth-role-badge-${selectedRole}`}>
+                <Icon name={roles.find(r => r.id === selectedRole)?.icon || "user"} size={14} />
+                {selectedRole}
               </div>
-            ) : null}
+              <h2 className="auth-form-title">
+                {selectedRole === "admin" ? "Admin login" : authMode === "login" ? "Welcome back" : `Register as ${selectedRole}`}
+              </h2>
+              <p className="auth-form-sub">
+                {selectedRole === "admin"
+                  ? "Restricted to authorized staff"
+                  : authMode === "login"
+                  ? "Sign in to your account"
+                  : "Create your account in seconds"}
+              </p>
+            </div>
+
+            {selectedRole !== "admin" && (
+              <div className="auth-tab-row">
+                <button className={`auth-tab${authMode === "login" ? " auth-tab-active" : ""}`} onClick={() => setAuthMode("login")}>Login</button>
+                <button className={`auth-tab${authMode === "register" ? " auth-tab-active" : ""}`} onClick={() => setAuthMode("register")}>Register</button>
+              </div>
+            )}
 
             <div className="auth-form-scroll">
-              {(authMode === "login" || selectedRole === "admin") ? (
-                <div className="form-grid compact-grid compact-grid-tight">
-                  <label>
-                    Phone
-                    <input value={loginForm.phone} onChange={(event) => setLoginForm({ ...loginForm, phone: event.target.value })} />
-                  </label>
-                  <label>
-                    Password
-                    <input type="password" value={loginForm.password} onChange={(event) => setLoginForm({ ...loginForm, password: event.target.value })} />
-                  </label>
-                  <button className="primary full-button" onClick={handleLogin} disabled={busy}>Enter {selectedRole} portal</button>
-                  {selectedRole === "admin" ? <span className="muted">Seed admin login: `9000000000` / `admin123`</span> : null}
+              {(authMode === "login" || selectedRole === "admin") && (
+                <div className="field-stack">
+                  <div className="field">
+                    <label>Phone</label>
+                    <div className="input-icon-wrap">
+                      <span className="input-icon"><Icon name="phone" size={15} /></span>
+                      <input
+                        value={loginForm.phone}
+                        onChange={(e) => setLoginForm({ ...loginForm, phone: e.target.value })}
+                        placeholder="Enter phone number"
+                        onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                      />
+                    </div>
+                  </div>
+                  <div className="field">
+                    <label>Password</label>
+                    <input
+                      type="password"
+                      value={loginForm.password}
+                      onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                      placeholder="Enter password"
+                      onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                    />
+                  </div>
+                  <button className="btn-primary btn-full" onClick={handleLogin} disabled={busy}>
+                    {busy && <Spinner />} {busy ? "Signing in…" : `Enter ${selectedRole} portal`}
+                  </button>
+                  {selectedRole === "admin" && (
+                    <div className="form-hint-box">
+                      <Icon name="alertCircle" size={13} />
+                      <span>Seed: <code>9000000000</code> / <code>admin123</code></span>
+                    </div>
+                  )}
                 </div>
-              ) : null}
+              )}
 
-              {selectedRole === "customer" && authMode === "register" ? (
-                <div className="form-grid compact-grid compact-grid-tight">
-                  <label>
-                    Full name
-                    <input value={customerRegisterForm.fullName} onChange={(event) => setCustomerRegisterForm({ ...customerRegisterForm, fullName: event.target.value })} />
-                  </label>
-                  <label>
-                    Phone
-                    <input value={customerRegisterForm.phone} onChange={(event) => setCustomerRegisterForm({ ...customerRegisterForm, phone: event.target.value })} />
-                  </label>
-                  <label>
-                    Email
-                    <input value={customerRegisterForm.email} onChange={(event) => setCustomerRegisterForm({ ...customerRegisterForm, email: event.target.value })} />
-                  </label>
-                  <label>
-                    Password
-                    <input type="password" value={customerRegisterForm.password} onChange={(event) => setCustomerRegisterForm({ ...customerRegisterForm, password: event.target.value })} />
-                  </label>
-                  <button className="primary full-button" onClick={handleCustomerRegister} disabled={busy}>Create customer account</button>
+              {selectedRole === "customer" && authMode === "register" && (
+                <div className="field-stack">
+                  <div className="field-row-2">
+                    <div className="field">
+                      <label>Full name</label>
+                      <input value={customerRegisterForm.fullName} onChange={(e) => setCustomerRegisterForm({ ...customerRegisterForm, fullName: e.target.value })} placeholder="Your full name" />
+                    </div>
+                    <div className="field">
+                      <label>Phone</label>
+                      <input value={customerRegisterForm.phone} onChange={(e) => setCustomerRegisterForm({ ...customerRegisterForm, phone: e.target.value })} placeholder="Mobile number" />
+                    </div>
+                  </div>
+                  <div className="field">
+                    <label>Email</label>
+                    <input type="email" value={customerRegisterForm.email} onChange={(e) => setCustomerRegisterForm({ ...customerRegisterForm, email: e.target.value })} placeholder="your@email.com" />
+                  </div>
+                  <div className="field">
+                    <label>Password</label>
+                    <input type="password" value={customerRegisterForm.password} onChange={(e) => setCustomerRegisterForm({ ...customerRegisterForm, password: e.target.value })} placeholder="Create password" />
+                  </div>
+                  <button className="btn-primary btn-full" onClick={handleCustomerRegister} disabled={busy}>
+                    {busy && <Spinner />} {busy ? "Creating account…" : "Create customer account"}
+                  </button>
                 </div>
-              ) : null}
+              )}
 
-              {selectedRole === "partner" && authMode === "register" ? (
-                <div className="auth-section-stack">
-                  <div className="mini-section">
-                    <h3>Partner details</h3>
-                    <div className="form-grid compact-grid compact-grid-tight">
-                      <label>
-                        Full name
-                        <input value={partnerRegisterForm.fullName} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, fullName: event.target.value })} />
-                      </label>
-                      <label>
-                        Phone
-                        <input value={partnerRegisterForm.phone} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, phone: event.target.value })} />
-                      </label>
-                      <label>
-                        Email
-                        <input value={partnerRegisterForm.email} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, email: event.target.value })} />
-                      </label>
-                      <label>
-                        Password
-                        <input type="password" value={partnerRegisterForm.password} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, password: event.target.value })} />
-                      </label>
-                      <label>
-                        Aadhaar
-                        <input value={partnerRegisterForm.aadhaar} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, aadhaar: event.target.value })} />
-                      </label>
-                      <label>
-                        PAN
-                        <input value={partnerRegisterForm.pan} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, pan: event.target.value })} />
-                      </label>
-                      <label>
-                        License number
-                        <input value={partnerRegisterForm.licenseNumber} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, licenseNumber: event.target.value })} />
-                      </label>
-                      <label>
-                        Bank account
-                        <input value={partnerRegisterForm.bankAccount} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, bankAccount: event.target.value })} />
-                      </label>
-                      <label className="full">
-                        Address
-                        <input value={partnerRegisterForm.address} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, address: event.target.value })} />
-                      </label>
-                      <label>
-                        Distance away (km)
-                        <input type="number" value={partnerRegisterForm.distanceAwayKm} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, distanceAwayKm: Number(event.target.value) })} />
-                      </label>
+              {selectedRole === "partner" && authMode === "register" && (
+                <div className="field-stack">
+                  <div className="form-section-label">Partner Details</div>
+                  <div className="field-row-2">
+                    <div className="field">
+                      <label>Full name</label>
+                      <input value={partnerRegisterForm.fullName} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, fullName: e.target.value })} placeholder="Your full name" />
+                    </div>
+                    <div className="field">
+                      <label>Phone</label>
+                      <input value={partnerRegisterForm.phone} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, phone: e.target.value })} placeholder="Mobile number" />
+                    </div>
+                  </div>
+                  <div className="field-row-2">
+                    <div className="field">
+                      <label>Email</label>
+                      <input type="email" value={partnerRegisterForm.email} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, email: e.target.value })} placeholder="your@email.com" />
+                    </div>
+                    <div className="field">
+                      <label>Password</label>
+                      <input type="password" value={partnerRegisterForm.password} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, password: e.target.value })} placeholder="Create password" />
+                    </div>
+                  </div>
+                  <div className="field-row-2">
+                    <div className="field">
+                      <label>Aadhaar</label>
+                      <input value={partnerRegisterForm.aadhaar} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, aadhaar: e.target.value })} placeholder="Aadhaar number" />
+                    </div>
+                    <div className="field">
+                      <label>PAN</label>
+                      <input value={partnerRegisterForm.pan} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, pan: e.target.value })} placeholder="PAN card" />
+                    </div>
+                  </div>
+                  <div className="field-row-2">
+                    <div className="field">
+                      <label>License number</label>
+                      <input value={partnerRegisterForm.licenseNumber} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, licenseNumber: e.target.value })} placeholder="DL number" />
+                    </div>
+                    <div className="field">
+                      <label>Bank account</label>
+                      <input value={partnerRegisterForm.bankAccount} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, bankAccount: e.target.value })} placeholder="Account number" />
+                    </div>
+                  </div>
+                  <div className="field-row-2">
+                    <div className="field">
+                      <label>Address</label>
+                      <input value={partnerRegisterForm.address} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, address: e.target.value })} placeholder="Full address" />
+                    </div>
+                    <div className="field">
+                      <label>Distance away (km)</label>
+                      <input type="number" value={partnerRegisterForm.distanceAwayKm} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, distanceAwayKm: Number(e.target.value) })} />
                     </div>
                   </div>
 
-                  <div className="mini-section mini-section-accent">
-                    <h3>Vehicle and rider setup</h3>
-                    <div className="form-grid compact-grid compact-grid-tight">
-                      <label>
-                        Vehicle type
-                        <select value={partnerRegisterForm.vehicleType} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, vehicleType: event.target.value })}>
-                          <option value="bike">Bike</option>
-                          <option value="scooter">Scooter</option>
-                          <option value="ev-bike">EV Bike</option>
-                        </select>
-                      </label>
-                      <label>
-                        Vehicle number
-                        <input value={partnerRegisterForm.vehicleNumber} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, vehicleNumber: event.target.value })} />
-                      </label>
-                      <label>
-                        RC number
-                        <input value={partnerRegisterForm.rcNumber} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, rcNumber: event.target.value })} />
-                      </label>
-                      <label>
-                        Insurance number
-                        <input value={partnerRegisterForm.insuranceNumber} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, insuranceNumber: event.target.value })} />
-                      </label>
-                      <label>
-                        Rider full name
-                        <input value={partnerRegisterForm.riderFullName} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, riderFullName: event.target.value })} />
-                      </label>
-                      <label>
-                        Rider phone
-                        <input value={partnerRegisterForm.riderPhone} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, riderPhone: event.target.value })} />
-                      </label>
-                      <label>
-                        Rider license number
-                        <input value={partnerRegisterForm.riderLicenseNumber} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, riderLicenseNumber: event.target.value })} />
-                      </label>
-                      <label>
-                        Rider emergency contact
-                        <input value={partnerRegisterForm.riderEmergencyContact} onChange={(event) => setPartnerRegisterForm({ ...partnerRegisterForm, riderEmergencyContact: event.target.value })} />
-                      </label>
-                      <button className="primary full-button" onClick={handlePartnerRegister} disabled={busy}>Register partner, vehicle, and rider</button>
+                  <div className="form-section-label form-section-accent">Vehicle &amp; Rider Setup</div>
+                  <div className="field-row-2">
+                    <div className="field">
+                      <label>Vehicle type</label>
+                      <select value={partnerRegisterForm.vehicleType} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, vehicleType: e.target.value })}>
+                        <option value="bike">Bike</option>
+                        <option value="scooter">Scooter</option>
+                        <option value="ev-bike">EV Bike</option>
+                      </select>
+                    </div>
+                    <div className="field">
+                      <label>Vehicle number</label>
+                      <input value={partnerRegisterForm.vehicleNumber} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, vehicleNumber: e.target.value })} placeholder="MH01AB1234" />
                     </div>
                   </div>
+                  <div className="field-row-2">
+                    <div className="field">
+                      <label>RC number</label>
+                      <input value={partnerRegisterForm.rcNumber} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, rcNumber: e.target.value })} placeholder="RC number" />
+                    </div>
+                    <div className="field">
+                      <label>Insurance number</label>
+                      <input value={partnerRegisterForm.insuranceNumber} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, insuranceNumber: e.target.value })} placeholder="Policy number" />
+                    </div>
+                  </div>
+                  <div className="field-row-2">
+                    <div className="field">
+                      <label>Rider full name</label>
+                      <input value={partnerRegisterForm.riderFullName} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, riderFullName: e.target.value })} placeholder="Rider name" />
+                    </div>
+                    <div className="field">
+                      <label>Rider phone</label>
+                      <input value={partnerRegisterForm.riderPhone} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, riderPhone: e.target.value })} placeholder="Rider phone" />
+                    </div>
+                  </div>
+                  <div className="field-row-2">
+                    <div className="field">
+                      <label>Rider license</label>
+                      <input value={partnerRegisterForm.riderLicenseNumber} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, riderLicenseNumber: e.target.value })} placeholder="DL number" />
+                    </div>
+                    <div className="field">
+                      <label>Emergency contact</label>
+                      <input value={partnerRegisterForm.riderEmergencyContact} onChange={(e) => setPartnerRegisterForm({ ...partnerRegisterForm, riderEmergencyContact: e.target.value })} placeholder="Emergency phone" />
+                    </div>
+                  </div>
+                  <button className="btn-primary btn-full" onClick={handlePartnerRegister} disabled={busy}>
+                    {busy && <Spinner />} {busy ? "Registering…" : "Register partner, vehicle & rider"}
+                  </button>
                 </div>
-              ) : null}
+              )}
             </div>
-          </section>
-        </main>
+          </div>
+        </div>
       </div>
     );
   }
 
+  // ─── CUSTOMER VIEW ────────────────────────────────────────────────────────────
   if (session.role === "customer") {
     return (
-      <div className="app-shell dashboard-shell customer-shell">
-        <header className="hero hero-simple hero-dashboard">
-          <div>
-            <span className="hero-badge">Customer Journey</span>
-            <h1>{view.user.fullName}, book and manage your deliveries.</h1>
+      <div className="shell shell-customer">
+        <ToastContainer toasts={toasts} removeToast={removeToast} />
+
+        <nav className="topnav">
+          <div className="topnav-brand">
+            <div className="brand-orb brand-orb-sm">R</div>
+            <span>Rapido</span>
           </div>
-          <button className="ghost" onClick={logout}>Logout</button>
-        </header>
+          <div className="topnav-center">
+            <span className="role-pill role-pill-customer"><Icon name="user" size={12} /> Customer</span>
+            <span className="topnav-name">{view.user.fullName}</span>
+          </div>
+          <button className="btn-ghost btn-icon-text" onClick={logout}>
+            <Icon name="logout" size={15} /> Logout
+          </button>
+        </nav>
 
-        <AlertModal message={error} onClose={() => setError("")} />
+        <main className="dashboard-grid dashboard-grid-customer">
+          {/* Booking panel */}
+          <section className="panel panel-sticky">
+            <SectionTitle eyebrow="New Booking" title="Book a delivery" subtitle="Bookings stay open until a partner accepts." />
 
-        <main className="content-grid">
-          <section className="panel">
-            <SectionTitle eyebrow="Booking" title="Create a new delivery" subtitle="Bookings stay open until an approved online partner accepts them." />
-            <div className="form-grid compact-grid">
-              <label className="full">
-                Pickup address
+            <div className="field-stack mt-16">
+              <div className="field">
+                <label><Icon name="mapPin" size={13} /> Pickup address</label>
                 <div className="osm-field">
                   <input
                     value={bookingForm.pickupAddress}
                     onFocus={() => setShowPickupSuggestions(true)}
                     onBlur={() => setTimeout(() => setShowPickupSuggestions(false), 150)}
-                    onChange={(event) => {
-                      setBookingForm({ ...bookingForm, pickupAddress: event.target.value, pickupLat: null, pickupLng: null, distanceKm: 0 });
-                      setShowPickupSuggestions(true);
-                    }}
+                    onChange={(e) => { setBookingForm({ ...bookingForm, pickupAddress: e.target.value, pickupLat: null, pickupLng: null, distanceKm: 0 }); setShowPickupSuggestions(true); }}
                     placeholder="Type pickup address"
                   />
-                  {showPickupSuggestions && pickupSuggestions.length ? (
-                    <div className="osm-suggestions">
+                  {showPickupSuggestions && pickupSuggestions.length > 0 && (
+                    <div className="osm-dropdown">
                       {pickupSuggestions.map((item) => (
-                        <button
-                          type="button"
-                          className="osm-suggestion"
-                          key={item.label}
-                          onMouseDown={() => {
-                            setBookingForm((current) => {
-                            const next = { ...current, pickupAddress: item.label, pickupLat: item.lat, pickupLng: item.lng };
-                            if (next.dropLat && next.dropLng) {
-                              return { ...next, distanceKm: estimateRoadKmFromCoords(next.pickupLat, next.pickupLng, next.dropLat, next.dropLng) };
-                            }
+                        <button type="button" className="osm-item" key={item.label} onMouseDown={() => {
+                          setBookingForm((cur) => {
+                            const next = { ...cur, pickupAddress: item.label, pickupLat: item.lat, pickupLng: item.lng };
+                            if (next.dropLat && next.dropLng) return { ...next, distanceKm: estimateRoadKmFromCoords(next.pickupLat, next.pickupLng, next.dropLat, next.dropLng) };
                             return next;
                           });
-                            setShowPickupSuggestions(false);
-                          }}
-                        >
-                          {item.label}
+                          setShowPickupSuggestions(false);
+                        }}>
+                          <Icon name="mapPin" size={13} />
+                          <span>{item.label}</span>
                         </button>
                       ))}
                     </div>
-                  ) : null}
+                  )}
                 </div>
-              </label>
-              <label className="full">
-                Pickup details (flat / wing / floor / landmark)
-                <input
-                  value={bookingForm.pickupDetails}
-                  onChange={(event) => setBookingForm({ ...bookingForm, pickupDetails: event.target.value })}
-                  placeholder="Example: Ratan Heights, A wing, 902 (near Navjeevan Society)"
-                />
-              </label>
-              <label className="full">
-                Drop address
+              </div>
+
+              <div className="field">
+                <label>Pickup details</label>
+                <input value={bookingForm.pickupDetails} onChange={(e) => setBookingForm({ ...bookingForm, pickupDetails: e.target.value })} placeholder="Flat / wing / floor / landmark" />
+              </div>
+
+              <div className="field">
+                <label><Icon name="mapPin" size={13} /> Drop address</label>
                 <div className="osm-field">
                   <input
                     value={bookingForm.dropAddress}
                     onFocus={() => setShowDropSuggestions(true)}
                     onBlur={() => setTimeout(() => setShowDropSuggestions(false), 150)}
-                    onChange={(event) => {
-                      setBookingForm({ ...bookingForm, dropAddress: event.target.value, dropLat: null, dropLng: null, distanceKm: 0 });
-                      setShowDropSuggestions(true);
-                    }}
+                    onChange={(e) => { setBookingForm({ ...bookingForm, dropAddress: e.target.value, dropLat: null, dropLng: null, distanceKm: 0 }); setShowDropSuggestions(true); }}
                     placeholder="Type drop address"
                   />
-                  {showDropSuggestions && dropSuggestions.length ? (
-                    <div className="osm-suggestions">
+                  {showDropSuggestions && dropSuggestions.length > 0 && (
+                    <div className="osm-dropdown">
                       {dropSuggestions.map((item) => (
-                        <button
-                          type="button"
-                          className="osm-suggestion"
-                          key={item.label}
-                          onMouseDown={() => {
-                            setBookingForm((current) => {
-                            const next = { ...current, dropAddress: item.label, dropLat: item.lat, dropLng: item.lng };
-                            if (next.pickupLat && next.pickupLng) {
-                              return { ...next, distanceKm: estimateRoadKmFromCoords(next.pickupLat, next.pickupLng, next.dropLat, next.dropLng) };
-                            }
+                        <button type="button" className="osm-item" key={item.label} onMouseDown={() => {
+                          setBookingForm((cur) => {
+                            const next = { ...cur, dropAddress: item.label, dropLat: item.lat, dropLng: item.lng };
+                            if (next.pickupLat && next.pickupLng) return { ...next, distanceKm: estimateRoadKmFromCoords(next.pickupLat, next.pickupLng, next.dropLat, next.dropLng) };
                             return next;
                           });
-                            setShowDropSuggestions(false);
-                          }}
-                        >
-                          {item.label}
+                          setShowDropSuggestions(false);
+                        }}>
+                          <Icon name="mapPin" size={13} />
+                          <span>{item.label}</span>
                         </button>
                       ))}
                     </div>
-                  ) : null}
+                  )}
                 </div>
-              </label>
-              <label className="full">
-                Drop details (flat / wing / floor / landmark)
-                <input
-                  value={bookingForm.dropDetails}
-                  onChange={(event) => setBookingForm({ ...bookingForm, dropDetails: event.target.value })}
-                  placeholder="Example: Building name, wing, flat number, landmark"
-                />
-              </label>
-              <label>
-                Distance (km)
-                <input type="number" value={bookingForm.distanceKm} readOnly />
-              </label>
-              <label>
-                Weight (kg)
-                <input type="number" value={bookingForm.weightKg} onChange={(event) => setBookingForm({ ...bookingForm, weightKg: Number(event.target.value) })} />
-              </label>
-              <label>
-                Vehicle type
-                <select value={bookingForm.vehicleType} onChange={(event) => setBookingForm({ ...bookingForm, vehicleType: event.target.value })}>
-                  {view.vehicles.map((vehicle) => <option key={vehicle.id} value={vehicle.id}>{vehicle.name}</option>)}
-                </select>
-              </label>
-              <label>
-                Zone
-                <select value={bookingForm.zoneId} onChange={(event) => setBookingForm({ ...bookingForm, zoneId: event.target.value })}>
-                  {view.zones.map((zone) => <option key={zone.id} value={zone.id}>{zone.name}</option>)}
-                </select>
-              </label>
-              <label>
-                Payment method
-                <select value={bookingForm.paymentMethod} onChange={(event) => setBookingForm({ ...bookingForm, paymentMethod: event.target.value })}>
-                  <option value="Online">Online</option>
-                  <option value="COD">COD</option>
-                </select>
-              </label>
+              </div>
+
+              <div className="field">
+                <label>Drop details</label>
+                <input value={bookingForm.dropDetails} onChange={(e) => setBookingForm({ ...bookingForm, dropDetails: e.target.value })} placeholder="Building / wing / flat / landmark" />
+              </div>
+
+              <div className="field-row-3">
+                <div className="field">
+                  <label>Distance (km)</label>
+                  <input type="number" value={bookingForm.distanceKm} readOnly className="input-readonly" />
+                </div>
+                <div className="field">
+                  <label>Weight (kg)</label>
+                  <input type="number" value={bookingForm.weightKg} onChange={(e) => setBookingForm({ ...bookingForm, weightKg: Number(e.target.value) })} />
+                </div>
+                <div className="field">
+                  <label>Payment</label>
+                  <select value={bookingForm.paymentMethod} onChange={(e) => setBookingForm({ ...bookingForm, paymentMethod: e.target.value })}>
+                    <option value="Online">Online</option>
+                    <option value="COD">COD</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="field-row-2">
+                <div className="field">
+                  <label>Vehicle type</label>
+                  <select value={bookingForm.vehicleType} onChange={(e) => setBookingForm({ ...bookingForm, vehicleType: e.target.value })}>
+                    {view.vehicles.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
+                  </select>
+                </div>
+                <div className="field">
+                  <label>Zone</label>
+                  <select value={bookingForm.zoneId} onChange={(e) => setBookingForm({ ...bookingForm, zoneId: e.target.value })}>
+                    {view.zones.map((z) => <option key={z.id} value={z.id}>{z.name}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              {estimate && (
+                <div className="estimate-card">
+                  <div className="estimate-total">
+                    <span>Estimated fare</span>
+                    <strong>₹{estimate.total}</strong>
+                  </div>
+                  <div className="estimate-breakdown">
+                    <div className="estimate-line"><span>Base fare</span><span>₹{estimate.baseFare}</span></div>
+                    <div className="estimate-line"><span>Distance charge</span><span>₹{estimate.distanceCharge}</span></div>
+                    <div className="estimate-line"><span>Weight charge</span><span>₹{estimate.weightCharge}</span></div>
+                  </div>
+                </div>
+              )}
+
+              <div className="btn-row">
+                <button className="btn-secondary" onClick={estimateFare} disabled={busy}>
+                  {busy ? <Spinner /> : <Icon name="dollar" size={15} />} Estimate fare
+                </button>
+                <button className="btn-primary" onClick={createBooking} disabled={busy}>
+                  {busy ? <Spinner /> : <Icon name="package" size={15} />} Book now
+                </button>
+              </div>
             </div>
-            <div className="action-row">
-              <button className="secondary" onClick={estimateFare}>Estimate fare</button>
-              <button className="primary" onClick={createBooking}>Create booking</button>
-            </div>
-            {estimate ? <div className="estimate-card"><strong>Estimated total: Rs {estimate.total}</strong><span>Base Rs {estimate.baseFare}</span><span>Distance Rs {estimate.distanceCharge}</span><span>Weight Rs {estimate.weightCharge}</span></div> : null}
           </section>
 
+          {/* Deliveries panel */}
           <section className="panel">
-            <SectionTitle eyebrow="History" title="Your deliveries" subtitle="Every booking includes full tracking history." />
-            <div className="delivery-table">
-              {view.deliveries.map((delivery) => (
-                <div className="delivery-row delivery-row-history" key={delivery.id}>
-                  <div className="delivery-summary">
-                    <strong>{delivery.id} - Rs {delivery.price}</strong>
-                    <span>{delivery.status} - {delivery.pickupAddress} to {delivery.dropAddress}</span>
-                    {delivery.pickupDetails ? <span>Pickup details: {delivery.pickupDetails}</span> : null}
-                    {delivery.dropDetails ? <span>Drop details: {delivery.dropDetails}</span> : null}
-                    <span>{delivery.partnerName || "Waiting for partner"}</span>
-                    <span>{delivery.riderName ? `Assigned rider: ${delivery.riderName} (${delivery.riderPhone})` : "Rider not assigned yet"}</span>
-                    {delivery.status !== "Delivered" && delivery.status !== "Cancelled" ? (
-                      <div className="cancel-box">
-                        <input
-                          placeholder="Cancellation reason"
-                          value={cancelReasons[delivery.id] || ""}
-                          onChange={(event) => setCancelReason(delivery.id, event.target.value)}
-                        />
-                        <button className="ghost" onClick={() => cancelDelivery(delivery.id)}>Cancel delivery</button>
+            <SectionTitle eyebrow="History" title="Your deliveries" subtitle="Full tracking history for every booking." />
+
+            {view.deliveries.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon"><Icon name="package" size={32} /></div>
+                <p>No deliveries yet. Book your first one!</p>
+              </div>
+            ) : (
+              <div className="delivery-list mt-16">
+                {view.deliveries.map((d) => (
+                  <div className="delivery-card" key={d.id}>
+                    <div className="delivery-card-top">
+                      <div className="delivery-card-meta">
+                        <span className="delivery-id">#{d.id}</span>
+                        <StatusBadge status={d.status} />
+                        <span className="delivery-price">₹{d.price}</span>
                       </div>
-                    ) : null}
-                  </div>
-                  <button className="toggle-history" onClick={() => toggleDeliveryExpansion(delivery.id)}>
-                    {expandedDeliveries[delivery.id] ? "Hide tracking journey" : `Show tracking journey (${delivery.history.length})`}
-                  </button>
-                  {expandedDeliveries[delivery.id] ? (
-                    <div className="history-list">
-                      {delivery.history.map((item, index) => <div className="history-item" key={`${delivery.id}-${index}`}><strong>{item.status}</strong><span>{item.note}</span><span>{formatDate(item.createdAt)}</span></div>)}
+                      <button className="btn-ghost btn-xs" onClick={() => toggleDeliveryExpansion(d.id)}>
+                        <Icon name={expandedDeliveries[d.id] ? "chevronUp" : "chevronDown"} size={14} />
+                        {expandedDeliveries[d.id] ? "Less" : "More"}
+                      </button>
                     </div>
-                  ) : null}
-                </div>
-              ))}
-            </div>
+
+                    <div className="delivery-route">
+                      <div className="route-point route-pickup">
+                        <span className="route-dot route-dot-pickup" />
+                        <span>{d.pickupAddress}</span>
+                      </div>
+                      <div className="route-connector-line" />
+                      <div className="route-point route-drop">
+                        <span className="route-dot route-dot-drop" />
+                        <span>{d.dropAddress}</span>
+                      </div>
+                    </div>
+
+                    <DeliveryProgress status={d.status} />
+
+                    {d.riderName ? (
+                      <div className="rider-chip">
+                        <div className="rider-avatar">{d.riderName[0]}</div>
+                        <div className="rider-info">
+                          <strong>{d.riderName}</strong>
+                          <span><Icon name="phone" size={11} /> {d.riderPhone}</span>
+                        </div>
+                        <span className="rider-label">Your rider</span>
+                      </div>
+                    ) : (
+                      <div className="waiting-chip">
+                        <Icon name="clock" size={14} />
+                        <span>Waiting for a partner to accept</span>
+                      </div>
+                    )}
+
+                    {d.status !== "Delivered" && d.status !== "Cancelled" && (
+                      <div className="cancel-section">
+                        <input
+                          className="cancel-input"
+                          placeholder="Reason for cancellation (optional)"
+                          value={cancelReasons[d.id] || ""}
+                          onChange={(e) => setCancelReason(d.id, e.target.value)}
+                        />
+                        <button className="btn-danger-ghost" onClick={() => cancelDelivery(d.id)}>
+                          <Icon name="xCircle" size={14} /> Cancel delivery
+                        </button>
+                      </div>
+                    )}
+
+                    {expandedDeliveries[d.id] && d.history.length > 0 && (
+                      <div className="history-timeline">
+                        {d.history.map((h, i) => (
+                          <div className="timeline-item" key={`${d.id}-${i}`}>
+                            <div className="timeline-dot" />
+                            <div className="timeline-content">
+                              <strong>{h.status}</strong>
+                              <span>{h.note}</span>
+                              <time>{formatDate(h.createdAt)}</time>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
         </main>
       </div>
     );
   }
 
+  // ─── PARTNER VIEW ─────────────────────────────────────────────────────────────
   if (session.role === "partner") {
-    const openJobs = view.deliveries.filter((delivery) => !delivery.partnerId && delivery.status === "Created");
-    const myJobs = view.deliveries.filter((delivery) => delivery.partnerId === session.userId && delivery.status !== "Cancelled");
+    const openJobs = view.deliveries.filter((d) => !d.partnerId && d.status === "Created");
+    const myJobs = view.deliveries.filter((d) => d.partnerId === session.userId && d.status !== "Cancelled");
+    const isOnline = view.profile.availability === "Online";
+
     return (
-      <div className="app-shell dashboard-shell partner-shell">
-        <header className="hero hero-simple hero-dashboard">
-          <div>
-            <span className="hero-badge">Partner Journey</span>
-            <h1>{view.user.fullName}, manage your onboarding, riders, and delivery jobs.</h1>
-            <p>Accepted jobs are tied to a specific rider so the customer always knows who is coming.</p>
+      <div className="shell shell-partner">
+        <ToastContainer toasts={toasts} removeToast={removeToast} />
+
+        <nav className="topnav">
+          <div className="topnav-brand">
+            <div className="brand-orb brand-orb-sm">R</div>
+            <span>Rapido</span>
           </div>
-          <button className="ghost" onClick={logout}>Logout</button>
-        </header>
+          <div className="topnav-center">
+            <span className="role-pill role-pill-partner"><Icon name="truck" size={12} /> Partner</span>
+            <span className="topnav-name">{view.user.fullName}</span>
+          </div>
+          <button className="btn-ghost btn-icon-text" onClick={logout}>
+            <Icon name="logout" size={15} /> Logout
+          </button>
+        </nav>
 
-        <AlertModal message={error} onClose={() => setError("")} />
-
-        <main className="content-grid">
+        <main className="dashboard-grid dashboard-grid-single">
+          {/* Profile & Status */}
           <section className="panel">
-            <SectionTitle eyebrow="Profile" title="Partner status" subtitle="Admin can inspect all your submitted details before approval." />
-            <div className="metric-grid role-metrics">
-              <MetricCard label="Verification" value={view.profile.verificationStatus} accent="#ff6b35" />
-              <MetricCard label="Availability" value={view.profile.availability} accent="#017a5b" />
-              <MetricCard label="Riders" value={view.profile.riders.length} accent="#0f172a" />
+            <div className="partner-status-bar">
+              <div className="partner-status-left">
+                <SectionTitle eyebrow="Profile" title="Partner status" />
+                <StatusBadge status={view.profile.verificationStatus} />
+              </div>
+              <div className="availability-toggle-wrap">
+                <span className="avail-label">{isOnline ? "Online" : "Offline"}</span>
+                <button
+                  className={`avail-switch${isOnline ? " avail-on" : ""}`}
+                  onClick={toggleAvailability}
+                  aria-label="Toggle availability"
+                >
+                  <span className="avail-thumb" />
+                </button>
+              </div>
             </div>
-            <div className="action-row">
-              <button className="ghost" onClick={toggleAvailability}>Toggle availability</button>
+
+            <div className="metrics-row mt-16">
+              <MetricCard label="Verification" value={view.profile.verificationStatus} accent="#f97316" icon="checkCircle" />
+              <MetricCard label="Status" value={view.profile.availability} accent={isOnline ? "#10b981" : "#6b7280"} icon="activity" />
+              <MetricCard label="Riders" value={view.profile.riders.length} accent="#3b82f6" icon="users" />
+              <MetricCard label="Vehicles" value={view.profile.vehicles.length} accent="#8b5cf6" icon="truck" />
             </div>
-            <div className="details-grid">
+
+            <div className="details-grid mt-16">
               <DetailRow label="Aadhaar" value={view.profile.aadhaar} />
               <DetailRow label="PAN" value={view.profile.pan} />
               <DetailRow label="License" value={view.profile.licenseNumber} />
               <DetailRow label="Bank account" value={view.profile.bankAccount} />
               <DetailRow label="Address" value={view.profile.address} />
             </div>
-            <div className="split-grid">
+
+            <div className="two-col-subpanels mt-16">
               <div className="subpanel">
-                <h3>Your vehicles</h3>
-                {view.profile.vehicles.map((vehicle) => <div className="price-rule" key={vehicle.id}><strong>{vehicle.vehicleType}</strong><span>{vehicle.vehicleNumber} - RC {vehicle.rcNumber || "-"} - Insurance {vehicle.insuranceNumber || "-"}</span></div>)}
+                <h3 className="subpanel-title"><Icon name="truck" size={15} /> Vehicles</h3>
+                {view.profile.vehicles.length === 0 ? <p className="muted-text">No vehicles added.</p> : (
+                  <div className="item-list">
+                    {view.profile.vehicles.map((v) => (
+                      <div className="item-row" key={v.id}>
+                        <strong>{v.vehicleType}</strong>
+                        <span>{v.vehicleNumber}</span>
+                        <span className="muted-text">RC {v.rcNumber || "—"}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="subpanel">
-                <h3>Your riders</h3>
-                {view.profile.riders.map((rider) => <div className="price-rule" key={rider.id}><strong>{rider.fullName}</strong><span>{rider.phone} - License {rider.licenseNumber || "-"}</span></div>)}
+                <h3 className="subpanel-title"><Icon name="users" size={15} /> Riders</h3>
+                {view.profile.riders.length === 0 ? <p className="muted-text">No riders added.</p> : (
+                  <div className="item-list">
+                    {view.profile.riders.map((r) => (
+                      <div className="item-row" key={r.id}>
+                        <div className="rider-mini-avatar">{r.fullName[0]}</div>
+                        <div>
+                          <strong>{r.fullName}</strong>
+                          <span className="muted-text">{r.phone}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
-            <div className="split-grid">
-              <div className="subpanel">
-                <h3>Add vehicle</h3>
-                <div className="form-grid compact-grid">
-              <label>
-                Vehicle type
-                <select value={vehicleForm.vehicleType} onChange={(event) => setVehicleForm({ ...vehicleForm, vehicleType: event.target.value })}>
-                  {view.vehicles.map((vehicle) => <option key={vehicle.id} value={vehicle.id}>{vehicle.name}</option>)}
-                </select>
-              </label>
-              <label>
-                Vehicle number
-                <input value={vehicleForm.vehicleNumber} onChange={(event) => setVehicleForm({ ...vehicleForm, vehicleNumber: event.target.value })} />
-              </label>
-              <label>
-                RC number
-                <input value={vehicleForm.rcNumber} onChange={(event) => setVehicleForm({ ...vehicleForm, rcNumber: event.target.value })} />
-              </label>
-              <label>
-                Insurance number
-                <input value={vehicleForm.insuranceNumber} onChange={(event) => setVehicleForm({ ...vehicleForm, insuranceNumber: event.target.value })} />
-              </label>
-              <button className="primary full-button" onClick={addVehicle}>Add vehicle</button>
+
+            <div className="two-col-subpanels mt-16">
+              <div className="subpanel subpanel-accent">
+                <h3 className="subpanel-title"><Icon name="plus" size={15} /> Add vehicle</h3>
+                <div className="field-stack mt-12">
+                  <div className="field">
+                    <label>Vehicle type</label>
+                    <select value={vehicleForm.vehicleType} onChange={(e) => setVehicleForm({ ...vehicleForm, vehicleType: e.target.value })}>
+                      {view.vehicles.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>Vehicle number</label>
+                    <input value={vehicleForm.vehicleNumber} onChange={(e) => setVehicleForm({ ...vehicleForm, vehicleNumber: e.target.value })} placeholder="MH01AB1234" />
+                  </div>
+                  <div className="field-row-2">
+                    <div className="field">
+                      <label>RC number</label>
+                      <input value={vehicleForm.rcNumber} onChange={(e) => setVehicleForm({ ...vehicleForm, rcNumber: e.target.value })} placeholder="RC number" />
+                    </div>
+                    <div className="field">
+                      <label>Insurance</label>
+                      <input value={vehicleForm.insuranceNumber} onChange={(e) => setVehicleForm({ ...vehicleForm, insuranceNumber: e.target.value })} placeholder="Policy number" />
+                    </div>
+                  </div>
+                  <button className="btn-primary" onClick={addVehicle} disabled={busy}>
+                    {busy ? <Spinner /> : <Icon name="plus" size={14} />} Add vehicle
+                  </button>
                 </div>
               </div>
-              <div className="subpanel">
-                <h3>Add rider</h3>
-                <div className="form-grid compact-grid">
-                  <label>
-                    Rider full name
-                    <input value={riderForm.fullName} onChange={(event) => setRiderForm({ ...riderForm, fullName: event.target.value })} />
-                  </label>
-                  <label>
-                    Rider phone
-                    <input value={riderForm.phone} onChange={(event) => setRiderForm({ ...riderForm, phone: event.target.value })} />
-                  </label>
-                  <label>
-                    Rider license number
-                    <input value={riderForm.licenseNumber} onChange={(event) => setRiderForm({ ...riderForm, licenseNumber: event.target.value })} />
-                  </label>
-                  <label>
-                    Emergency contact
-                    <input value={riderForm.emergencyContact} onChange={(event) => setRiderForm({ ...riderForm, emergencyContact: event.target.value })} />
-                  </label>
-                  <button className="primary full-button" onClick={addRider}>Add rider</button>
+
+              <div className="subpanel subpanel-accent">
+                <h3 className="subpanel-title"><Icon name="plus" size={15} /> Add rider</h3>
+                <div className="field-stack mt-12">
+                  <div className="field">
+                    <label>Full name</label>
+                    <input value={riderForm.fullName} onChange={(e) => setRiderForm({ ...riderForm, fullName: e.target.value })} placeholder="Rider full name" />
+                  </div>
+                  <div className="field">
+                    <label>Phone</label>
+                    <input value={riderForm.phone} onChange={(e) => setRiderForm({ ...riderForm, phone: e.target.value })} placeholder="Mobile number" />
+                  </div>
+                  <div className="field-row-2">
+                    <div className="field">
+                      <label>License</label>
+                      <input value={riderForm.licenseNumber} onChange={(e) => setRiderForm({ ...riderForm, licenseNumber: e.target.value })} placeholder="DL number" />
+                    </div>
+                    <div className="field">
+                      <label>Emergency contact</label>
+                      <input value={riderForm.emergencyContact} onChange={(e) => setRiderForm({ ...riderForm, emergencyContact: e.target.value })} placeholder="Emergency phone" />
+                    </div>
+                  </div>
+                  <button className="btn-primary" onClick={addRider} disabled={busy}>
+                    {busy ? <Spinner /> : <Icon name="plus" size={14} />} Add rider
+                  </button>
                 </div>
               </div>
             </div>
           </section>
 
+          {/* Jobs panel */}
           <section className="panel">
-            <SectionTitle eyebrow="Jobs" title="Accept and manage deliveries" subtitle="Open jobs can be accepted once. Accepted jobs can still be cancelled with history recorded." />
-            <div className="split-grid">
+            <SectionTitle eyebrow="Jobs" title="Accept & manage deliveries" subtitle="Open jobs can be accepted once. Accepted jobs track status to Delivered." />
+
+            <div className="two-col-subpanels mt-16">
               <div className="subpanel">
-                <h3>Assigned to you</h3>
-                {myJobs.length ? myJobs.map((delivery) => {
-                  const currentIndex = statusFlow.indexOf(delivery.status);
-                  const nextStatus = currentIndex >= 0 ? statusFlow[Math.min(currentIndex + 1, statusFlow.length - 1)] : statusFlow[0];
-                  return (
-                    <div className="job-item job-item-vertical" key={delivery.id}>
-                      <div>
-                        <strong>{delivery.id}</strong>
-                        <span>{delivery.status} - {delivery.pickupAddress} to {delivery.dropAddress}</span>
-                        {delivery.pickupDetails ? <span>Pickup details: {delivery.pickupDetails}</span> : null}
-                        {delivery.dropDetails ? <span>Drop details: {delivery.dropDetails}</span> : null}
-                        <span>Assigned rider: {delivery.riderName || "-"} - {delivery.riderPhone || "-"}</span>
-                        <span>{delivery.customerName} - {delivery.customerPhone}</span>
-                      </div>
-                      <div className="action-row multi-action-row">
-                        {delivery.status !== "Delivered" ? <button className="secondary" onClick={() => updateDeliveryStatus(delivery.id, nextStatus)}>Move to {nextStatus}</button> : null}
-                        {delivery.status !== "Delivered" && delivery.status !== "Cancelled" ? <button className="ghost" onClick={() => cancelDelivery(delivery.id)}>Cancel accepted job</button> : null}
-                      </div>
-                      <input
-                        placeholder="Reason if cancelling"
-                        value={cancelReasons[delivery.id] || ""}
-                        onChange={(event) => setCancelReason(delivery.id, event.target.value)}
-                      />
-                    </div>
-                  );
-                }) : <span className="muted">No jobs assigned yet.</span>}
-              </div>
-              <div className="subpanel">
-                <h3>Unassigned jobs</h3>
-                {openJobs.length ? openJobs.map((delivery) => (
-                  <div className="job-item job-item-vertical" key={delivery.id}>
-                    <div>
-                      <strong>{delivery.id}</strong>
-                      <span>{delivery.pickupAddress} to {delivery.dropAddress}</span>
-                      {delivery.pickupDetails ? <span>Pickup details: {delivery.pickupDetails}</span> : null}
-                      {delivery.dropDetails ? <span>Drop details: {delivery.dropDetails}</span> : null}
-                      <span>Rs {delivery.price} - {delivery.distanceKm} km</span>
-                    </div>
-                    <select value={selectedRiders[delivery.id] || view.profile.riders[0]?.id || ""} onChange={(event) => setSelectedRider(delivery.id, event.target.value)}>
-                      {view.profile.riders.map((rider) => <option key={rider.id} value={rider.id}>{rider.fullName} - {rider.phone}</option>)}
-                    </select>
-                    <button className="primary" onClick={() => acceptDelivery(delivery.id)}>Accept with rider</button>
+                <h3 className="subpanel-title">
+                  <Icon name="package" size={15} /> My jobs
+                  {myJobs.length > 0 && <span className="count-badge">{myJobs.length}</span>}
+                </h3>
+                {myJobs.length === 0 ? (
+                  <div className="empty-state-sm">
+                    <Icon name="package" size={24} />
+                    <span>No jobs assigned yet</span>
                   </div>
-                )) : <span className="muted">No open jobs right now.</span>}
+                ) : (
+                  <div className="job-list">
+                    {myJobs.map((d) => {
+                      const idx = statusFlow.indexOf(d.status);
+                      const next = idx >= 0 ? statusFlow[Math.min(idx + 1, statusFlow.length - 1)] : statusFlow[0];
+                      return (
+                        <div className="job-card" key={d.id}>
+                          <div className="job-card-header">
+                            <span className="delivery-id">#{d.id}</span>
+                            <StatusBadge status={d.status} />
+                          </div>
+                          <div className="job-route">
+                            <span className="route-dot route-dot-pickup" />{d.pickupAddress}
+                          </div>
+                          <div className="job-route">
+                            <span className="route-dot route-dot-drop" />{d.dropAddress}
+                          </div>
+                          {d.pickupDetails && <p className="job-detail">Pickup: {d.pickupDetails}</p>}
+                          {d.dropDetails && <p className="job-detail">Drop: {d.dropDetails}</p>}
+                          <div className="job-meta">
+                            <span><Icon name="users" size={12} /> {d.riderName || "—"}</span>
+                            <span><Icon name="phone" size={12} /> {d.customerPhone}</span>
+                          </div>
+                          <div className="btn-row mt-8">
+                            {d.status !== "Delivered" && (
+                              <button className="btn-primary btn-sm" onClick={() => updateDeliveryStatus(d.id, next)}>
+                                Move to {next}
+                              </button>
+                            )}
+                            {d.status !== "Delivered" && (
+                              <>
+                                <input
+                                  className="cancel-input"
+                                  placeholder="Cancel reason"
+                                  value={cancelReasons[d.id] || ""}
+                                  onChange={(e) => setCancelReason(d.id, e.target.value)}
+                                />
+                                <button className="btn-danger-ghost btn-sm" onClick={() => cancelDelivery(d.id)}>
+                                  <Icon name="xCircle" size={13} /> Cancel
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              <div className="subpanel subpanel-highlight">
+                <h3 className="subpanel-title">
+                  <Icon name="activity" size={15} /> Open jobs
+                  {openJobs.length > 0 && <span className="count-badge count-badge-orange">{openJobs.length}</span>}
+                </h3>
+                {openJobs.length === 0 ? (
+                  <div className="empty-state-sm">
+                    <Icon name="clock" size={24} />
+                    <span>No open jobs right now</span>
+                  </div>
+                ) : (
+                  <div className="job-list">
+                    {openJobs.map((d) => (
+                      <div className="job-card job-card-open" key={d.id}>
+                        <div className="job-card-header">
+                          <span className="delivery-id">#{d.id}</span>
+                          <span className="price-tag">₹{d.price}</span>
+                        </div>
+                        <div className="job-route">
+                          <span className="route-dot route-dot-pickup" />{d.pickupAddress}
+                        </div>
+                        <div className="job-route">
+                          <span className="route-dot route-dot-drop" />{d.dropAddress}
+                        </div>
+                        <div className="job-meta">
+                          <span><Icon name="mapPin" size={12} /> {d.distanceKm} km</span>
+                        </div>
+                        <div className="field mt-8">
+                          <label>Assign rider</label>
+                          <select value={selectedRiders[d.id] || view.profile.riders[0]?.id || ""} onChange={(e) => setSelectedRider(d.id, e.target.value)}>
+                            {view.profile.riders.map((r) => <option key={r.id} value={r.id}>{r.fullName} — {r.phone}</option>)}
+                          </select>
+                        </div>
+                        <button className="btn-primary btn-full mt-8" onClick={() => acceptDelivery(d.id)}>
+                          <Icon name="checkCircle" size={14} /> Accept with rider
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </section>
@@ -1023,70 +1188,103 @@ export default function App() {
     );
   }
 
+  // ─── ADMIN VIEW ───────────────────────────────────────────────────────────────
   return (
-    <div className="app-shell dashboard-shell admin-shell">
-      <header className="hero hero-simple hero-dashboard">
-        <div>
-          <span className="hero-badge">Admin Journey</span>
-          <h1>{view.user.fullName}, approve partners and manage live operations.</h1>
+    <div className="shell shell-admin">
+      <ToastContainer toasts={toasts} removeToast={removeToast} />
+
+      <nav className="topnav">
+        <div className="topnav-brand">
+          <div className="brand-orb brand-orb-sm">R</div>
+          <span>Rapido</span>
         </div>
-        <button className="ghost" onClick={logout}>Logout</button>
-      </header>
+        <div className="topnav-center">
+          <span className="role-pill role-pill-admin"><Icon name="shield" size={12} /> Admin</span>
+          <span className="topnav-name">{view.user.fullName}</span>
+        </div>
+        <button className="btn-ghost btn-icon-text" onClick={logout}>
+          <Icon name="logout" size={15} /> Logout
+        </button>
+      </nav>
 
-      <AlertModal message={error} onClose={() => setError("")} />
-
-      <main className="content-grid">
+      <main className="dashboard-grid dashboard-grid-single">
+        {/* Metrics */}
         <section className="panel">
-          <SectionTitle eyebrow="Dashboard" title="Operations overview" subtitle="Admin sees metrics, partners, and all deliveries." />
-          <div className="metric-grid">
-            <MetricCard label="Total deliveries" value={view.dashboard.totalDeliveries} accent="#0f172a" />
-            <MetricCard label="Online partners" value={view.dashboard.onlinePartners} accent="#017a5b" />
-            <MetricCard label="Pending partners" value={view.dashboard.pendingPartners} accent="#ff6b35" />
-            <MetricCard label="Completed revenue" value={`Rs ${view.dashboard.completedRevenue}`} accent="#155eef" />
+          <SectionTitle eyebrow="Dashboard" title="Operations overview" subtitle="Live metrics across the platform." />
+          <div className="metrics-row mt-16">
+            <MetricCard label="Total deliveries" value={view.dashboard.totalDeliveries} accent="#0f172a" icon="package" />
+            <MetricCard label="Online partners" value={view.dashboard.onlinePartners} accent="#10b981" icon="users" />
+            <MetricCard label="Pending approvals" value={view.dashboard.pendingPartners} accent="#f97316" icon="clock" />
+            <MetricCard label="Revenue" value={`₹${view.dashboard.completedRevenue}`} accent="#3b82f6" icon="dollar" />
           </div>
         </section>
 
+        {/* Partner review */}
         <section className="panel">
-          <SectionTitle eyebrow="Partners" title="Partner, vehicle, and rider review" subtitle="Admin can inspect the full operational setup before approving the partner." />
-          <div className="stack">
-            {view.partners.map((partner) => (
-              <div className="list-card" key={partner.id}>
-                <div className="list-head">
-                  <div>
-                    <strong>{partner.name}</strong>
-                    <span>{partner.phone} - {partner.email || "No email"} - {partner.verificationStatus} - {partner.availability}</span>
+          <SectionTitle eyebrow="Partners" title="Partner & rider review" subtitle="Inspect full onboarding details before approving." />
+          <div className="partner-list mt-16">
+            {view.partners.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon"><Icon name="users" size={32} /></div>
+                <p>No partners registered yet.</p>
+              </div>
+            ) : view.partners.map((p) => (
+              <div className="partner-card" key={p.id}>
+                <div className="partner-card-header">
+                  <div className="partner-identity">
+                    <div className="partner-avatar">{p.name[0]}</div>
+                    <div>
+                      <strong className="partner-name">{p.name}</strong>
+                      <span className="partner-contact">{p.phone} {p.email ? `· ${p.email}` : ""}</span>
+                    </div>
                   </div>
-                  <div className="pill-row">
-                    <button className="ghost" onClick={() => updatePartnerVerification(partner.id, "Approved")}>Approve</button>
-                    <button className="ghost" onClick={() => updatePartnerVerification(partner.id, "Rejected")}>Reject</button>
+                  <div className="partner-actions">
+                    <StatusBadge status={p.verificationStatus} />
+                    <StatusBadge status={p.availability} />
+                    <button className="btn-success-sm" onClick={() => updatePartnerVerification(p.id, "Approved")}>
+                      <Icon name="checkCircle" size={13} /> Approve
+                    </button>
+                    <button className="btn-danger-sm" onClick={() => updatePartnerVerification(p.id, "Rejected")}>
+                      <Icon name="xCircle" size={13} /> Reject
+                    </button>
                   </div>
                 </div>
+
                 <div className="details-grid">
-                  <DetailRow label="Aadhaar" value={partner.aadhaar} />
-                  <DetailRow label="PAN" value={partner.pan} />
-                  <DetailRow label="License" value={partner.licenseNumber} />
-                  <DetailRow label="Bank account" value={partner.bankAccount} />
-                  <DetailRow label="Address" value={partner.address} />
-                  <DetailRow label="Distance away" value={`${partner.distanceAwayKm} km`} />
+                  <DetailRow label="Aadhaar" value={p.aadhaar} />
+                  <DetailRow label="PAN" value={p.pan} />
+                  <DetailRow label="License" value={p.licenseNumber} />
+                  <DetailRow label="Bank account" value={p.bankAccount} />
+                  <DetailRow label="Address" value={p.address} />
+                  <DetailRow label="Distance away" value={`${p.distanceAwayKm} km`} />
                 </div>
-                <div className="split-grid">
-                  <div className="history-list">
-                    {partner.vehicles.map((vehicle) => (
-                      <div className="history-item" key={vehicle.id}>
-                        <strong>{vehicle.vehicleType}</strong>
-                        <span>{vehicle.vehicleNumber}</span>
-                        <span>RC {vehicle.rcNumber || "-"} - Insurance {vehicle.insuranceNumber || "-"}</span>
-                      </div>
-                    ))}
+
+                <div className="two-col-subpanels mt-12">
+                  <div>
+                    <h4 className="mini-heading"><Icon name="truck" size={13} /> Vehicles</h4>
+                    <div className="item-list">
+                      {p.vehicles.map((v) => (
+                        <div className="item-row" key={v.id}>
+                          <strong>{v.vehicleType}</strong>
+                          <span>{v.vehicleNumber}</span>
+                          <span className="muted-text">RC {v.rcNumber || "—"} · Ins {v.insuranceNumber || "—"}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="history-list">
-                    {partner.riders?.map((rider) => (
-                      <div className="history-item" key={rider.id}>
-                        <strong>{rider.fullName}</strong>
-                        <span>{rider.phone}</span>
-                        <span>License {rider.licenseNumber || "-"} - Emergency {rider.emergencyContact || "-"}</span>
-                      </div>
-                    ))}
+                  <div>
+                    <h4 className="mini-heading"><Icon name="users" size={13} /> Riders</h4>
+                    <div className="item-list">
+                      {p.riders?.map((r) => (
+                        <div className="item-row" key={r.id}>
+                          <div className="rider-mini-avatar">{r.fullName[0]}</div>
+                          <div>
+                            <strong>{r.fullName}</strong>
+                            <span className="muted-text">{r.phone} · License {r.licenseNumber || "—"}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1094,53 +1292,111 @@ export default function App() {
           </div>
         </section>
 
+        {/* All deliveries */}
         <section className="panel">
-          <SectionTitle eyebrow="Dispatch" title="All deliveries and history" subtitle="Admin can inspect which rider accepted or is assigned to every order." />
-          <div className="delivery-table">
-            {view.deliveries.map((delivery) => (
-              <div className="delivery-row delivery-row-history" key={delivery.id}>
-                <div className="delivery-summary">
-                  <strong>{delivery.id} - Rs {delivery.price}</strong>
-                  <span>{delivery.customerName} - {delivery.customerPhone}</span>
-                  <span>{delivery.status} - {delivery.pickupAddress} to {delivery.dropAddress}</span>
-                  {delivery.pickupDetails ? <span>Pickup details: {delivery.pickupDetails}</span> : null}
-                  {delivery.dropDetails ? <span>Drop details: {delivery.dropDetails}</span> : null}
-                  <span>{delivery.riderName ? `Rider: ${delivery.riderName} (${delivery.riderPhone})` : "Rider not assigned yet"}</span>
-                  {delivery.partnerId ? (
-                    <span>Partner: {delivery.partnerName}</span>
-                  ) : delivery.status === "Created" ? (
-                    <select onChange={(event) => assignDelivery(delivery.id, event.target.value)} defaultValue="">
-                      <option value="" disabled>Assign partner</option>
-                      {view.partners
-                        .filter((partner) => partner.verificationStatus === "Approved")
-                        .map((partner) => (
-                          <option key={partner.id} value={partner.id}>{partner.name}</option>
-                        ))}
-                    </select>
-                  ) : null}
-                  {delivery.status !== "Delivered" && delivery.status !== "Cancelled" ? (
-                    <div className="cancel-box">
+          <SectionTitle eyebrow="Dispatch" title="All deliveries" subtitle="Full audit trail — assign partners, monitor status, cancel if needed." />
+          {view.deliveries.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon"><Icon name="activity" size={32} /></div>
+              <p>No deliveries yet.</p>
+            </div>
+          ) : (
+            <div className="delivery-list mt-16">
+              {view.deliveries.map((d) => (
+                <div className="delivery-card" key={d.id}>
+                  <div className="delivery-card-top">
+                    <div className="delivery-card-meta">
+                      <span className="delivery-id">#{d.id}</span>
+                      <StatusBadge status={d.status} />
+                      <span className="delivery-price">₹{d.price}</span>
+                    </div>
+                    <div className="customer-meta">
+                      <Icon name="user" size={13} />
+                      <span>{d.customerName} · {d.customerPhone}</span>
+                    </div>
+                  </div>
+
+                  <div className="delivery-route">
+                    <div className="route-point route-pickup">
+                      <span className="route-dot route-dot-pickup" />
+                      <span>{d.pickupAddress}</span>
+                    </div>
+                    <div className="route-connector-line" />
+                    <div className="route-point route-drop">
+                      <span className="route-dot route-dot-drop" />
+                      <span>{d.dropAddress}</span>
+                    </div>
+                  </div>
+
+                  <DeliveryProgress status={d.status} />
+
+                  <div className="dispatch-row">
+                    {d.riderName ? (
+                      <div className="rider-chip">
+                        <div className="rider-avatar">{d.riderName[0]}</div>
+                        <div className="rider-info">
+                          <strong>{d.riderName}</strong>
+                          <span>{d.riderPhone}</span>
+                        </div>
+                        <span className="rider-label">Rider</span>
+                      </div>
+                    ) : (
+                      <div className="waiting-chip"><Icon name="clock" size={14} /> No rider assigned</div>
+                    )}
+
+                    {d.partnerId ? (
+                      <div className="partner-chip">
+                        <Icon name="truck" size={13} />
+                        <span>{d.partnerName}</span>
+                      </div>
+                    ) : d.status === "Created" ? (
+                      <div className="assign-select-wrap">
+                        <select
+                          className="assign-select"
+                          onChange={(e) => assignDelivery(d.id, e.target.value)}
+                          defaultValue=""
+                        >
+                          <option value="" disabled>Assign partner…</option>
+                          {view.partners
+                            .filter((p) => p.verificationStatus === "Approved")
+                            .map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                        </select>
+                      </div>
+                    ) : null}
+                  </div>
+
+                  {d.status !== "Delivered" && d.status !== "Cancelled" && (
+                    <div className="cancel-section">
                       <input
+                        className="cancel-input"
                         placeholder="Cancellation reason"
-                        value={cancelReasons[delivery.id] || ""}
-                        onChange={(event) => setCancelReason(delivery.id, event.target.value)}
+                        value={cancelReasons[d.id] || ""}
+                        onChange={(e) => setCancelReason(d.id, e.target.value)}
                       />
-                      <button className="ghost" onClick={() => cancelDelivery(delivery.id)}>Cancel delivery</button>
+                      <button className="btn-danger-ghost" onClick={() => cancelDelivery(d.id)}>
+                        <Icon name="xCircle" size={14} /> Cancel
+                      </button>
                     </div>
-                  ) : null}
-                </div>
-                <div className="history-list">
-                  {delivery.history.map((item, index) => (
-                    <div className="history-item" key={`${delivery.id}-${index}`}>
-                      <strong>{item.status}</strong>
-                      <span>{item.note}</span>
-                      <span>{formatDate(item.createdAt)}</span>
+                  )}
+
+                  {d.history.length > 0 && (
+                    <div className="history-timeline">
+                      {d.history.map((h, i) => (
+                        <div className="timeline-item" key={`${d.id}-${i}`}>
+                          <div className="timeline-dot" />
+                          <div className="timeline-content">
+                            <strong>{h.status}</strong>
+                            <span>{h.note}</span>
+                            <time>{formatDate(h.createdAt)}</time>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
       </main>
     </div>
